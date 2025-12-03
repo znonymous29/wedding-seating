@@ -1,0 +1,188 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 主色 */
+  --primary: #B76E79;
+  --primary-light: #D4A5A5;
+  --primary-dark: #8B4D57;
+  
+  /* 辅助色 */
+  --accent-gold: #D4AF37;
+  --accent-blue: #7B9EA8;
+  
+  /* 中性色 */
+  --bg-cream: #FFFEF5;
+  --bg-card: #FFFFFF;
+  --text-primary: #2D2A26;
+  --text-secondary: #8B8680;
+  --border: #E8E4DF;
+  
+  /* 状态色 */
+  --success: #6B9E78;
+  --warning: #E6B422;
+  --error: #C75B5B;
+  
+  /* 标签色 */
+  --tag-relative: #E57373;
+  --tag-friend: #81C784;
+  --tag-colleague: #64B5F6;
+  --tag-vip: #BA68C8;
+  --tag-teacher: #FFD54F;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', '思源黑体', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-cream);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', '思源宋体', serif;
+  font-weight: 600;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-cream);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-light);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* 选中文本样式 */
+::selection {
+  background: var(--primary-light);
+  color: white;
+}
+
+/* 链接样式 */
+a {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+a:hover {
+  color: var(--primary-dark);
+}
+
+/* Ant Design 样式覆盖 */
+.ant-btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  border: none;
+  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+  box-shadow: 0 6px 16px rgba(183, 110, 121, 0.4);
+}
+
+.ant-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border);
+}
+
+.ant-modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector {
+  border-radius: 8px !important;
+  border-color: var(--border) !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px rgba(183, 110, 121, 0.2) !important;
+}
+
+.ant-table {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.ant-table-thead > tr > th {
+  background: var(--bg-cream) !important;
+  font-weight: 600;
+}
+
+/* 自定义标签颜色 */
+.tag-亲戚 { background: var(--tag-relative) !important; color: white !important; }
+.tag-朋友 { background: var(--tag-friend) !important; color: white !important; }
+.tag-同事 { background: var(--tag-colleague) !important; color: white !important; }
+.tag-VIP { background: var(--tag-vip) !important; color: white !important; }
+.tag-师长 { background: var(--tag-teacher) !important; color: #333 !important; }
+.tag-领导 { background: var(--accent-gold) !important; color: white !important; }
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* 卡片悬停效果 */
+.hover-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.25rem; }
+}

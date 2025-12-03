@@ -1,0 +1,188 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.overviewCards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.statCard {
+  border-radius: 12px !important;
+}
+
+.statCard :global(.ant-statistic-title) {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.statCard :global(.ant-statistic-content) {
+  font-family: 'Playfair Display', serif;
+}
+
+.progressCard {
+  border-radius: 12px !important;
+  padding: 24px;
+}
+
+.progressCard h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.chartsRow {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.chartCard {
+  border-radius: 12px !important;
+}
+
+.chartCard h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tagChart,
+.areaChart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tagRow,
+.areaRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tagInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.tagInfo span {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.tagBar,
+.areaBar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-cream);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tagBarFill,
+.areaBarFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.tagPercent,
+.areaCount {
+  width: 50px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.areaInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 80px;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.areaDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.capacityCard {
+  border-radius: 12px !important;
+}
+
+.capacityCard h3 {
+  margin: 0 0 20px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.capacityInfo {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.capacityItem {
+  text-align: center;
+  padding: 16px;
+  background: var(--bg-cream);
+  border-radius: 8px;
+}
+
+.capacityLabel {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.capacityValue {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .overviewCards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .chartsRow {
+    grid-template-columns: 1fr;
+  }
+
+  .capacityInfo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .overviewCards {
+    grid-template-columns: 1fr;
+  }
+
+  .capacityInfo {
+    grid-template-columns: 1fr;
+  }
+}
+

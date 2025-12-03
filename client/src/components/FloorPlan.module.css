@@ -1,0 +1,221 @@
+.container {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.scaleText {
+  margin-left: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.canvasWrapper {
+  flex: 1;
+  overflow: auto;
+  background: #f8f6f3;
+  position: relative;
+  min-height: 0; /* 确保 flex 子元素可以滚动 */
+}
+
+.canvas {
+  width: 1800px;
+  height: 1400px;
+  min-width: 1800px;
+  min-height: 1400px;
+  position: relative;
+  transform-origin: top left;
+  background: 
+    linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px),
+    linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.stage {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 60px;
+  background: linear-gradient(135deg, #D4AF37, #B8860B);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.entrance {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 24px;
+  background: white;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+/* 桌位包装器 */
+.tableWrapper {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  z-index: 1;
+}
+
+.tableWrapper:hover {
+  z-index: 50;
+}
+
+.tableWrapper.dragging {
+  z-index: 100;
+  opacity: 0.9;
+}
+
+/* 桌位中心 */
+.tableCenter {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.tableName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2c2c2c;
+}
+
+.tableCapacity {
+  font-size: 13px;
+  color: #444;
+  font-weight: 600;
+}
+
+/* 座位 */
+.seat {
+  position: absolute;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  pointer-events: none; /* 让鼠标事件穿透到桌位包装器 */
+}
+
+.tableWrapper:not(.dragging) .seat {
+  pointer-events: auto; /* 不拖拽时恢复鼠标事件 */
+}
+
+.seat:hover {
+  transform: scale(1.08);
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* 空座位 - 浅灰色边框圆环 */
+.emptySeat {
+  background: rgba(200, 200, 200, 0.3);
+  border: 3px dashed #bbb;
+}
+
+/* 已坐座位 - 温暖的玫瑰金色调 */
+.occupiedSeat {
+  background: linear-gradient(145deg, #5c5c5c, #3d3d3d);
+  border: 3px solid #B76E79;
+  color: white;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.seatName {
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.seatIndex {
+  font-size: 11px;
+  color: #F5C6CB;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* 图例 */
+.legend {
+  display: flex;
+  gap: 24px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: white;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.legendColor {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.emptySeatLegend {
+  background: rgba(200, 200, 200, 0.3);
+  border: 2px dashed #bbb;
+}
+
+.occupiedSeatLegend {
+  background: linear-gradient(145deg, #5c5c5c, #3d3d3d);
+  border: 2px solid #B76E79;
+}

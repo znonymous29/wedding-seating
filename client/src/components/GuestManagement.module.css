@@ -1,0 +1,80 @@
+.container {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.summary {
+  display: flex;
+  gap: 24px;
+  padding: 12px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.summary strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.importContent {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.importContent p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.importTip {
+  margin-top: 16px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters > * {
+    width: 100% !important;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
+

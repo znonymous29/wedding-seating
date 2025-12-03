@@ -1,0 +1,244 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户表
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phone         String?   @unique
+  passwordHash  String    @map("password_hash")
+  nickname      String
+  avatar        String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  ownedProjects   Project[]         @relation("ProjectOwner")
+  projectMembers  ProjectMember[]
+  createdGuests   Guest[]           @relation("GuestCreator")
+  managedAreas    Area[]            @relation("AreaManager")
+  assignments     SeatingAssignment[] @relation("AssignmentCreator")
+  constraints     SeatingConstraint[] @relation("ConstraintCreator")
+  activityLogs    ActivityLog[]
+
+  @@map("users")
+}
+
+// 项目表
+model Project {
+  id                    String    @id @default(cuid())
+  name                  String
+  weddingDate           DateTime? @map("wedding_date")
+  venue                 String?
+  coverImage            String?   @map("cover_image")
+  defaultSeatsPerTable  Int       @default(10) @map("default_seats_per_table")
+  status                ProjectStatus @default(PREPARING)
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  ownerId       String    @map("owner_id")
+  owner         User      @relation("ProjectOwner", fields: [ownerId], references: [id])
+  members       ProjectMember[]
+  areas         Area[]
+  guests        Guest[]
+  tables        Table[]
+  constraints   SeatingConstraint[]
+  activityLogs  ActivityLog[]
+  invitations   ProjectInvitation[]
+
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  PREPARING
+  COMPLETED
+  ARCHIVED
+}
+
+// 项目成员表
+model ProjectMember {
+  id        String      @id @default(cuid())
+  role      MemberRole
+  joinedAt  DateTime    @default(now()) @map("joined_at")
+
+  // 关联
+  projectId String      @map("project_id")
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String      @map("user_id")
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  areaId    String?     @map("area_id")
+  area      Area?       @relation(fields: [areaId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+enum MemberRole {
+  OWNER
+  COLLABORATOR
+  VIEWER
+}
+
+// 项目邀请表
+model ProjectInvitation {
+  id          String    @id @default(cuid())
+  token       String    @unique
+  role        MemberRole
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // 关联
+  projectId   String    @map("project_id")
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  areaId      String?   @map("area_id")
+  area        Area?     @relation(fields: [areaId], references: [id])
+
+  @@map("project_invitations")
+}
+
+// 管理区域表
+model Area {
+  id          String    @id @default(cuid())
+  name        String
+  color       String    @default("#B76E79")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // 关联
+  projectId   String    @map("project_id")
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  managerId   String?   @map("manager_id")
+  manager     User?     @relation("AreaManager", fields: [managerId], references: [id])
+  
+  guests      Guest[]
+  tables      Table[]
+  members     ProjectMember[]
+  invitations ProjectInvitation[]
+
+  @@map("areas")
+}
+
+// 宾客表
+model Guest {
+  id            String    @id @default(cuid())
+  name          String
+  headCount     Int       @default(1) @map("head_count")
+  phone         String?
+  relationship  String?
+  tags          String[]  @default([])
+  notes         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // 关联
+  projectId     String    @map("project_id")
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  areaId        String?   @map("area_id")
+  area          Area?     @relation(fields: [areaId], references: [id])
+  createdById   String    @map("created_by_id")
+  createdBy     User      @relation("GuestCreator", fields: [createdById], references: [id])
+  
+  assignment    SeatingAssignment?
+  constraints1  SeatingConstraint[] @relation("ConstraintGuest1")
+  constraints2  SeatingConstraint[] @relation("ConstraintGuest2")
+
+  @@map("guests")
+}
+
+// 桌位表
+model Table {
+  id          String    @id @default(cuid())
+  name        String
+  capacity    Int       @default(10)
+  positionX   Float     @default(0) @map("position_x")
+  positionY   Float     @default(0) @map("position_y")
+  tableType   TableType @default(ROUND) @map("table_type")
+  tags        String[]  @default([])
+  notes       String?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // 关联
+  projectId   String    @map("project_id")
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  areaId      String?   @map("area_id")
+  area        Area?     @relation(fields: [areaId], references: [id])
+  
+  assignments SeatingAssignment[]
+
+  @@map("tables")
+}
+
+enum TableType {
+  ROUND
+  RECTANGLE
+  SQUARE
+}
+
+// 座位安排表
+model SeatingAssignment {
+  id          String    @id @default(cuid())
+  assignedAt  DateTime  @default(now()) @map("assigned_at")
+
+  // 关联
+  tableId     String    @map("table_id")
+  table       Table     @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  guestId     String    @unique @map("guest_id")
+  guest       Guest     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  assignedById String   @map("assigned_by_id")
+  assignedBy  User      @relation("AssignmentCreator", fields: [assignedById], references: [id])
+
+  @@map("seating_assignments")
+}
+
+// 排座约束表
+model SeatingConstraint {
+  id              String          @id @default(cuid())
+  constraintType  ConstraintType  @map("constraint_type")
+  createdAt       DateTime        @default(now()) @map("created_at")
+
+  // 关联
+  projectId       String          @map("project_id")
+  project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  guest1Id        String          @map("guest1_id")
+  guest1          Guest           @relation("ConstraintGuest1", fields: [guest1Id], references: [id], onDelete: Cascade)
+  guest2Id        String          @map("guest2_id")
+  guest2          Guest           @relation("ConstraintGuest2", fields: [guest2Id], references: [id], onDelete: Cascade)
+  createdById     String          @map("created_by_id")
+  createdBy       User            @relation("ConstraintCreator", fields: [createdById], references: [id])
+
+  @@unique([guest1Id, guest2Id])
+  @@map("seating_constraints")
+}
+
+enum ConstraintType {
+  MUST_TOGETHER
+  MUST_APART
+}
+
+// 操作日志表
+model ActivityLog {
+  id          String    @id @default(cuid())
+  action      String
+  targetType  String    @map("target_type")
+  targetId    String?   @map("target_id")
+  details     Json?
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // 关联
+  projectId   String    @map("project_id")
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId      String    @map("user_id")
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
+}

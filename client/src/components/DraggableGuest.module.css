@@ -1,0 +1,64 @@
+.guestCard {
+  padding: 10px 12px;
+  background: var(--bg-cream);
+  border-radius: 8px;
+  cursor: grab;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.guestCard:hover {
+  border-color: var(--primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.guestCard.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.guestInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.countTag {
+  margin: 0;
+  font-size: 12px;
+  background: white;
+  border: none;
+}
+
+.tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  padding-left: 22px;
+}
+
+.tag {
+  margin: 0;
+  font-size: 11px;
+  padding: 0 6px;
+  line-height: 18px;
+}
+
+.moreTags {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+

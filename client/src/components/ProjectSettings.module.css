@@ -1,0 +1,22 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.container :global(.ant-card) {
+  border-radius: 12px;
+}
+
+.container :global(.ant-tabs-nav) {
+  margin-bottom: 24px;
+}
+
+.inviteLinkBox {
+  text-align: center;
+}
+
+.inviteLinkBox p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
