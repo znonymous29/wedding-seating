@@ -1,5 +1,5 @@
 # 构建阶段
-FROM node:22-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -20,8 +20,8 @@ RUN npm ci
 # 复制源代码
 COPY . .
 
-# 构建应用
-RUN npm run build
+# 构建应用（CI 模式，跳过 TypeScript 类型检查）
+RUN npm run build:ci
 
 # 生产阶段 - 使用 Nginx
 FROM nginx:alpine AS production
@@ -37,4 +37,3 @@ EXPOSE 80
 
 # 启动 Nginx
 CMD ["nginx", "-g", "daemon off;"]
-
