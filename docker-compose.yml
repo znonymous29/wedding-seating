@@ -55,7 +55,7 @@ services:
     container_name: wedding-client
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "18080:80"
     depends_on:
       - server
     networks:

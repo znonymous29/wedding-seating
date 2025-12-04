@@ -15,8 +15,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # 镜像名称会是: ghcr.io/你的用户名/wedding-seating-server
-  # 和: ghcr.io/你的用户名/wedding-seating-client
 
 jobs:
   build-server:
@@ -29,6 +27,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # 设置 QEMU 用于多平台构建
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -59,6 +61,8 @@ jobs:
         with:
           context: ./server
           file: ./server/Dockerfile
+          # 支持多平台: AMD64, ARM64, ARMv7
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-server.outputs.tags }}
           labels: ${{ steps.meta-server.outputs.labels }}
@@ -75,6 +79,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      # 设置 QEMU 用于多平台构建
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -105,6 +113,8 @@ jobs:
         with:
           context: ./client
           file: ./client/Dockerfile
+          # 支持多平台: AMD64, ARM64, ARMv7
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-client.outputs.tags }}
           labels: ${{ steps.meta-client.outputs.labels }}
@@ -133,6 +143,8 @@ jobs:
           generate_release_notes: true
           body: |
             ## Docker 镜像
+
+            支持平台: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 
             ```bash
             # 拉取镜像
