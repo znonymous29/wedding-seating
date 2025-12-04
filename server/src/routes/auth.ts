@@ -34,11 +34,10 @@ const generateTokens = (userId: string) => {
   return { accessToken, refreshToken };
 };
 
-// 注册
+// 注册（支持邮箱或手机号）
 router.post(
   "/register",
   [
-    body("email").isEmail().withMessage("请输入有效的邮箱地址"),
     body("password").isLength({ min: 6 }).withMessage("密码至少6位"),
     body("nickname").notEmpty().withMessage("请输入昵称"),
   ],
@@ -50,16 +49,32 @@ router.post(
 
     const { email, password, nickname, phone } = req.body;
 
-    // 检查邮箱是否已存在
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      throw new AppError("该邮箱已被注册", 400);
+    // 必须提供邮箱或手机号
+    if (!email && !phone) {
+      throw new AppError("请提供邮箱或手机号", 400);
     }
 
-    // 如果提供了手机号，检查是否已存在
+    // 验证邮箱格式
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw new AppError("请输入有效的邮箱地址", 400);
+    }
+
+    // 验证手机号格式
+    if (phone && !/^1[3-9]\d{9}$/.test(phone)) {
+      throw new AppError("请输入有效的手机号", 400);
+    }
+
+    // 检查邮箱是否已存在
+    if (email) {
+      const existingEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingEmail) {
+        throw new AppError("该邮箱已被注册", 400);
+      }
+    }
+
+    // 检查手机号是否已存在
     if (phone) {
       const existingPhone = await prisma.user.findUnique({
         where: { phone },
@@ -75,8 +90,8 @@ router.post(
     // 创建用户
     const user = await prisma.user.create({
       data: {
-        email,
-        phone,
+        email: email || null,
+        phone: phone || null,
         passwordHash,
         nickname,
       },

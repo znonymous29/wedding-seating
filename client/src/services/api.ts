@@ -89,7 +89,7 @@ export interface PaginatedResponse<T> {
 // Auth API
 export const authApi = {
   register: (data: {
-    email: string;
+    email?: string;
     password: string;
     nickname: string;
     phone?: string;
