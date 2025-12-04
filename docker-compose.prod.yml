@@ -27,7 +27,7 @@ services:
     # image: ghcr.io/你的用户名/wedding-seating-server:latest
     # 或者使用 Docker Hub 镜像
     # image: 你的用户名/wedding-seating-server:latest
-    image: ${SERVER_IMAGE:-ghcr.io/your-username/wedding-seating-server:latest}
+    image: ${SERVER_IMAGE}
     container_name: wedding-server
     restart: always
     environment:
@@ -45,12 +45,12 @@ services:
 
   client:
     # image: ghcr.io/你的用户名/wedding-seating-client:latest
-    image: ${CLIENT_IMAGE:-ghcr.io/your-username/wedding-seating-client:latest}
+    image: ${CLIENT_IMAGEt}
     container_name: wedding-client
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
+      - "18080:80"
+      - "18443:443"
     depends_on:
       - server
     networks:
