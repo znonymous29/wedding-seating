@@ -13,8 +13,8 @@ datasource db {
 // 用户表
 model User {
   id            String    @id @default(cuid())
-  email         String    @unique
-  phone         String?   @unique
+  email         String?   @unique  // 可选，支持手机号注册
+  phone         String?   @unique  // 可选，支持邮箱注册
   passwordHash  String    @map("password_hash")
   nickname      String
   avatar        String?
