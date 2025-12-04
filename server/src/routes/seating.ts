@@ -1,21 +1,26 @@
-import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { AppError, asyncHandler } from '../middleware/errorHandler';
-import { authenticate, AuthRequest, isProjectMember, isProjectAdmin } from '../middleware/auth';
+import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
+import { AppError, asyncHandler } from "../middleware/errorHandler";
+import {
+  authenticate,
+  AuthRequest,
+  isProjectMember,
+  isProjectAdmin,
+} from "../middleware/auth";
 
 const router = Router();
 const prisma = new PrismaClient();
 
 // 安排座位（将宾客分配到桌位）
 router.post(
-  '/assign',
+  "/assign",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { guestId, tableId } = req.body;
     const userId = req.user!.id;
 
     if (!guestId || !tableId) {
-      throw new AppError('请选择宾客和桌位', 400);
+      throw new AppError("请选择宾客和桌位", 400);
     }
 
     // 获取宾客信息
@@ -25,12 +30,12 @@ router.post(
     });
 
     if (!guest) {
-      throw new AppError('宾客不存在', 404);
+      throw new AppError("宾客不存在", 404);
     }
 
     // 检查宾客是否已有座位
     if (guest.assignment) {
-      throw new AppError('该宾客已有座位安排，请先移除原座位', 400);
+      throw new AppError("该宾客已有座位安排，请先移除原座位", 400);
     }
 
     // 获取桌位信息
@@ -46,7 +51,7 @@ router.post(
     });
 
     if (!table) {
-      throw new AppError('桌位不存在', 404);
+      throw new AppError("桌位不存在", 404);
     }
 
     // 验证权限
@@ -56,8 +61,8 @@ router.post(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有安排座位的权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有安排座位的权限", 403);
     }
 
     // 检查座位是否足够
@@ -67,7 +72,9 @@ router.post(
     );
     if (currentOccupied + guest.headCount > table.capacity) {
       throw new AppError(
-        `该桌剩余 ${table.capacity - currentOccupied} 个座位，无法容纳 ${guest.headCount} 人`,
+        `该桌剩余 ${table.capacity - currentOccupied} 个座位，无法容纳 ${
+          guest.headCount
+        } 人`,
         400
       );
     }
@@ -75,10 +82,7 @@ router.post(
     // 检查排座约束
     const constraints = await prisma.seatingConstraint.findMany({
       where: {
-        OR: [
-          { guest1Id: guestId },
-          { guest2Id: guestId },
-        ],
+        OR: [{ guest1Id: guestId }, { guest2Id: guestId }],
       },
       include: {
         guest1: { select: { id: true, name: true } },
@@ -87,17 +91,21 @@ router.post(
     });
 
     // 获取该桌已有宾客的ID
-    const tableGuestIds = table.assignments.map(a => a.guest).map((g: any) => g.id);
+    const tableGuestIds = table.assignments
+      .map((a) => a.guest)
+      .map((g: any) => g.id);
 
     for (const constraint of constraints) {
-      const otherGuestId = constraint.guest1Id === guestId 
-        ? constraint.guest2Id 
-        : constraint.guest1Id;
-      const otherGuestName = constraint.guest1Id === guestId
-        ? constraint.guest2.name
-        : constraint.guest1.name;
+      const otherGuestId =
+        constraint.guest1Id === guestId
+          ? constraint.guest2Id
+          : constraint.guest1Id;
+      const otherGuestName =
+        constraint.guest1Id === guestId
+          ? constraint.guest2.name
+          : constraint.guest1.name;
 
-      if (constraint.constraintType === 'MUST_APART') {
+      if (constraint.constraintType === "MUST_APART") {
         // 不能同桌的人已在该桌
         if (tableGuestIds.includes(otherGuestId)) {
           throw new AppError(
@@ -130,8 +138,8 @@ router.post(
       data: {
         projectId: guest.projectId,
         userId,
-        action: 'ASSIGN_SEAT',
-        targetType: 'seating',
+        action: "ASSIGN_SEAT",
+        targetType: "seating",
         targetId: assignment.id,
         details: {
           guestName: guest.name,
@@ -141,8 +149,8 @@ router.post(
     });
 
     // 发送 Socket 事件
-    const io = req.app.get('io');
-    io.to(`project:${guest.projectId}`).emit('seating:assigned', {
+    const io = req.app.get("io");
+    io.to(`project:${guest.projectId}`).emit("seating:assigned", {
       assignment,
       tableId,
       guestId,
@@ -158,7 +166,7 @@ router.post(
 
 // 移除座位安排
 router.delete(
-  '/unassign/:guestId',
+  "/unassign/:guestId",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { guestId } = req.params;
@@ -176,11 +184,11 @@ router.delete(
     });
 
     if (!guest) {
-      throw new AppError('宾客不存在', 404);
+      throw new AppError("宾客不存在", 404);
     }
 
     if (!guest.assignment) {
-      throw new AppError('该宾客尚未安排座位', 400);
+      throw new AppError("该宾客尚未安排座位", 400);
     }
 
     // 验证权限
@@ -190,8 +198,8 @@ router.delete(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有操作权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有操作权限", 403);
     }
 
     const tableId = guest.assignment.tableId;
@@ -206,8 +214,8 @@ router.delete(
       data: {
         projectId: guest.projectId,
         userId,
-        action: 'UNASSIGN_SEAT',
-        targetType: 'seating',
+        action: "UNASSIGN_SEAT",
+        targetType: "seating",
         details: {
           guestName: guest.name,
           tableName,
@@ -216,8 +224,8 @@ router.delete(
     });
 
     // 发送 Socket 事件
-    const io = req.app.get('io');
-    io.to(`project:${guest.projectId}`).emit('seating:unassigned', {
+    const io = req.app.get("io");
+    io.to(`project:${guest.projectId}`).emit("seating:unassigned", {
       guestId,
       tableId,
     });
@@ -231,7 +239,7 @@ router.delete(
 
 // 移动宾客到另一桌
 router.put(
-  '/move',
+  "/move",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { guestId, newTableId } = req.body;
@@ -247,7 +255,7 @@ router.put(
     });
 
     if (!guest) {
-      throw new AppError('宾客不存在', 404);
+      throw new AppError("宾客不存在", 404);
     }
 
     // 验证权限
@@ -257,8 +265,8 @@ router.put(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有操作权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有操作权限", 403);
     }
 
     // 获取新桌位信息
@@ -274,7 +282,7 @@ router.put(
     });
 
     if (!newTable) {
-      throw new AppError('目标桌位不存在', 404);
+      throw new AppError("目标桌位不存在", 404);
     }
 
     // 检查座位是否足够
@@ -284,7 +292,9 @@ router.put(
     );
     if (currentOccupied + guest.headCount > newTable.capacity) {
       throw new AppError(
-        `目标桌剩余 ${newTable.capacity - currentOccupied} 个座位，无法容纳 ${guest.headCount} 人`,
+        `目标桌剩余 ${newTable.capacity - currentOccupied} 个座位，无法容纳 ${
+          guest.headCount
+        } 人`,
         400
       );
     }
@@ -292,20 +302,18 @@ router.put(
     // 检查排座约束
     const constraints = await prisma.seatingConstraint.findMany({
       where: {
-        OR: [
-          { guest1Id: guestId },
-          { guest2Id: guestId },
-        ],
-        constraintType: 'MUST_APART',
+        OR: [{ guest1Id: guestId }, { guest2Id: guestId }],
+        constraintType: "MUST_APART",
       },
     });
 
-    const tableGuestIds = newTable.assignments.map(a => a.guest.id);
+    const tableGuestIds = newTable.assignments.map((a) => a.guest.id);
 
     for (const constraint of constraints) {
-      const otherGuestId = constraint.guest1Id === guestId 
-        ? constraint.guest2Id 
-        : constraint.guest1Id;
+      const otherGuestId =
+        constraint.guest1Id === guestId
+          ? constraint.guest2Id
+          : constraint.guest1Id;
 
       if (tableGuestIds.includes(otherGuestId)) {
         const otherGuest = await prisma.guest.findUnique({
@@ -346,19 +354,19 @@ router.put(
       data: {
         projectId: guest.projectId,
         userId,
-        action: 'MOVE_SEAT',
-        targetType: 'seating',
+        action: "MOVE_SEAT",
+        targetType: "seating",
         details: {
           guestName: guest.name,
-          fromTable: oldTableName || '未安排',
+          fromTable: oldTableName || "未安排",
           toTable: newTable.name,
         },
       },
     });
 
     // 发送 Socket 事件
-    const io = req.app.get('io');
-    io.to(`project:${guest.projectId}`).emit('seating:moved', {
+    const io = req.app.get("io");
+    io.to(`project:${guest.projectId}`).emit("seating:moved", {
       guestId,
       oldTableId,
       newTableId,
@@ -373,22 +381,22 @@ router.put(
 
 // 添加排座约束
 router.post(
-  '/constraint',
+  "/constraint",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { projectId, guest1Id, guest2Id, constraintType } = req.body;
     const userId = req.user!.id;
 
     if (!guest1Id || !guest2Id || !constraintType) {
-      throw new AppError('请提供完整的约束信息', 400);
+      throw new AppError("请提供完整的约束信息", 400);
     }
 
     if (guest1Id === guest2Id) {
-      throw new AppError('不能为同一位宾客设置约束', 400);
+      throw new AppError("不能为同一位宾客设置约束", 400);
     }
 
-    if (!['MUST_TOGETHER', 'MUST_APART'].includes(constraintType)) {
-      throw new AppError('无效的约束类型', 400);
+    if (!["MUST_TOGETHER", "MUST_APART"].includes(constraintType)) {
+      throw new AppError("无效的约束类型", 400);
     }
 
     // 验证权限
@@ -398,8 +406,8 @@ router.post(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有操作权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有操作权限", 403);
     }
 
     // 检查是否已存在约束
@@ -413,7 +421,7 @@ router.post(
     });
 
     if (existingConstraint) {
-      throw new AppError('这两位宾客已存在约束关系', 400);
+      throw new AppError("这两位宾客已存在约束关系", 400);
     }
 
     const constraint = await prisma.seatingConstraint.create({
@@ -432,7 +440,7 @@ router.post(
 
     res.status(201).json({
       success: true,
-      message: '约束添加成功',
+      message: "约束添加成功",
       data: constraint,
     });
   })
@@ -440,7 +448,7 @@ router.post(
 
 // 删除排座约束
 router.delete(
-  '/constraint/:constraintId',
+  "/constraint/:constraintId",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { constraintId } = req.params;
@@ -451,7 +459,7 @@ router.delete(
     });
 
     if (!constraint) {
-      throw new AppError('约束不存在', 404);
+      throw new AppError("约束不存在", 404);
     }
 
     // 验证权限
@@ -461,8 +469,8 @@ router.delete(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有操作权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有操作权限", 403);
     }
 
     await prisma.seatingConstraint.delete({
@@ -471,14 +479,14 @@ router.delete(
 
     res.json({
       success: true,
-      message: '约束已删除',
+      message: "约束已删除",
     });
   })
 );
 
 // 智能排座建议
 router.post(
-  '/suggest',
+  "/suggest",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { projectId, guestId } = req.body;
@@ -492,7 +500,7 @@ router.post(
     });
 
     if (!guest) {
-      throw new AppError('宾客不存在', 404);
+      throw new AppError("宾客不存在", 404);
     }
 
     // 获取所有可用桌位
@@ -522,23 +530,30 @@ router.post(
       if (availableSeats < guest.headCount) continue;
 
       // 检查约束
-      const tableGuestIds = table.assignments.map(a => a.guest.id);
+      const tableGuestIds = table.assignments.map((a) => a.guest.id);
       let hasConflict = false;
       let mustTogetherMatch = 0;
 
       const allConstraints = [...guest.constraints1, ...guest.constraints2];
 
       for (const constraint of allConstraints) {
-        const otherGuestId = constraint.guest1Id === guestId
-          ? constraint.guest2Id
-          : constraint.guest1Id;
+        const otherGuestId =
+          constraint.guest1Id === guestId
+            ? constraint.guest2Id
+            : constraint.guest1Id;
 
-        if (constraint.constraintType === 'MUST_APART' && tableGuestIds.includes(otherGuestId)) {
+        if (
+          constraint.constraintType === "MUST_APART" &&
+          tableGuestIds.includes(otherGuestId)
+        ) {
           hasConflict = true;
           break;
         }
 
-        if (constraint.constraintType === 'MUST_TOGETHER' && tableGuestIds.includes(otherGuestId)) {
+        if (
+          constraint.constraintType === "MUST_TOGETHER" &&
+          tableGuestIds.includes(otherGuestId)
+        ) {
           mustTogetherMatch++;
         }
       }
@@ -549,13 +564,13 @@ router.post(
       let score = 0;
 
       // 同标签加分
-      const tableGuestTags = table.assignments.flatMap(a => a.guest.tags);
-      const matchingTags = guest.tags.filter(t => tableGuestTags.includes(t));
+      const tableGuestTags = table.assignments.flatMap((a) => a.guest.tags);
+      const matchingTags = guest.tags.filter((t) => tableGuestTags.includes(t));
       score += matchingTags.length * 10;
 
       // 同区域加分
       const sameAreaGuests = table.assignments.filter(
-        a => a.guest.areaId === guest.areaId
+        (a) => a.guest.areaId === guest.areaId
       );
       score += sameAreaGuests.length * 5;
 
@@ -576,7 +591,8 @@ router.post(
         score,
         reasons: [
           matchingTags.length > 0 && `有${matchingTags.length}位相同标签的宾客`,
-          sameAreaGuests.length > 0 && `有${sameAreaGuests.length}位同区域的宾客`,
+          sameAreaGuests.length > 0 &&
+            `有${sameAreaGuests.length}位同区域的宾客`,
           mustTogetherMatch > 0 && `有${mustTogetherMatch}位必须同桌的宾客`,
         ].filter(Boolean),
       });
@@ -594,7 +610,7 @@ router.post(
 
 // 一键自动排座
 router.post(
-  '/auto-assign',
+  "/auto-assign",
   authenticate,
   asyncHandler(async (req: AuthRequest, res: any) => {
     const { projectId } = req.body;
@@ -607,8 +623,8 @@ router.post(
       },
     });
 
-    if (!member || member.role === 'VIEWER') {
-      throw new AppError('您没有操作权限', 403);
+    if (!member || member.role === "VIEWER") {
+      throw new AppError("您没有操作权限", 403);
     }
 
     // 获取未安排的宾客
@@ -620,8 +636,8 @@ router.post(
       include: {
         constraints1: true,
         constraints2: true,
+        area: true,
       },
-      orderBy: { headCount: 'desc' }, // 人多的先安排
     });
 
     // 获取所有桌位
@@ -633,19 +649,195 @@ router.post(
             guest: { select: { id: true, headCount: true, tags: true } },
           },
         },
+        area: true,
       },
     });
 
     const results = {
       assigned: 0,
       failed: 0,
-      details: [] as { guestName: string; tableName?: string; error?: string }[],
+      details: [] as {
+        guestName: string;
+        tableName?: string;
+        error?: string;
+      }[],
     };
 
+    // ===== 优化：先按区域分组，再按标签分组 =====
+
+    // 按区域分组
+    const areaGroups = new Map<string | null, typeof unassignedGuests>();
+
     for (const guest of unassignedGuests) {
-      // 查找合适的桌位
-      let bestTable = null;
-      let bestScore = -1;
+      const areaKey = guest.areaId || null;
+      if (!areaGroups.has(areaKey)) {
+        areaGroups.set(areaKey, []);
+      }
+      areaGroups.get(areaKey)!.push(guest);
+    }
+
+    // 对每个区域内，再按标签分组
+    const sortedGuests: typeof unassignedGuests = [];
+
+    // 先处理有区域的宾客
+    const areasWithGuests = Array.from(areaGroups.entries())
+      .filter(([areaId]) => areaId !== null)
+      .sort((a, b) => {
+        const totalA = a[1].reduce((sum, g) => sum + g.headCount, 0);
+        const totalB = b[1].reduce((sum, g) => sum + g.headCount, 0);
+        return totalB - totalA;
+      });
+
+    for (const [, guests] of areasWithGuests) {
+      // 在区域内按标签分组
+      const tagGroups = new Map<string, typeof guests>();
+      const noTagGuests: typeof guests = [];
+
+      for (const guest of guests) {
+        if (guest.tags.length === 0) {
+          noTagGuests.push(guest);
+        } else {
+          const primaryTag = guest.tags[0];
+          if (!tagGroups.has(primaryTag)) {
+            tagGroups.set(primaryTag, []);
+          }
+          tagGroups.get(primaryTag)!.push(guest);
+        }
+      }
+
+      // 按标签组大小排序
+      const sortedTagGroups = Array.from(tagGroups.entries()).sort((a, b) => {
+        const totalA = a[1].reduce((sum, g) => sum + g.headCount, 0);
+        const totalB = b[1].reduce((sum, g) => sum + g.headCount, 0);
+        return totalB - totalA;
+      });
+
+      // 先添加有标签的（按人数降序）
+      for (const [, tagGuests] of sortedTagGroups) {
+        tagGuests.sort((a, b) => b.headCount - a.headCount);
+        sortedGuests.push(...tagGuests);
+      }
+      // 再添加无标签的
+      noTagGuests.sort((a, b) => b.headCount - a.headCount);
+      sortedGuests.push(...noTagGuests);
+    }
+
+    // 最后处理没有区域的宾客
+    const noAreaGuests = areaGroups.get(null) || [];
+    const noAreaTagGroups = new Map<string, typeof noAreaGuests>();
+    const noAreaNoTagGuests: typeof noAreaGuests = [];
+
+    for (const guest of noAreaGuests) {
+      if (guest.tags.length === 0) {
+        noAreaNoTagGuests.push(guest);
+      } else {
+        const primaryTag = guest.tags[0];
+        if (!noAreaTagGroups.has(primaryTag)) {
+          noAreaTagGroups.set(primaryTag, []);
+        }
+        noAreaTagGroups.get(primaryTag)!.push(guest);
+      }
+    }
+
+    const sortedNoAreaTagGroups = Array.from(noAreaTagGroups.entries()).sort(
+      (a, b) => {
+        const totalA = a[1].reduce((sum, g) => sum + g.headCount, 0);
+        const totalB = b[1].reduce((sum, g) => sum + g.headCount, 0);
+        return totalB - totalA;
+      }
+    );
+
+    for (const [, tagGuests] of sortedNoAreaTagGroups) {
+      tagGuests.sort((a, b) => b.headCount - a.headCount);
+      sortedGuests.push(...tagGuests);
+    }
+    noAreaNoTagGuests.sort((a, b) => b.headCount - a.headCount);
+    sortedGuests.push(...noAreaNoTagGuests);
+
+    // 辅助函数：计算桌位得分
+    const calculateTableScore = (
+      table: (typeof tables)[0],
+      guest: (typeof unassignedGuests)[0],
+      occupiedSeats: number
+    ) => {
+      let score = 0;
+      const availableSeats = table.capacity - occupiedSeats;
+
+      // 1. 区域匹配得分（权重最高）
+      const areaMatched =
+        guest.areaId && table.areaId && guest.areaId === table.areaId;
+      if (areaMatched) {
+        score += 500; // 区域匹配 +500 分
+      }
+
+      // 如果宾客有区域，但桌位区域不匹配，惩罚
+      if (guest.areaId && table.areaId && guest.areaId !== table.areaId) {
+        score -= 300; // 区域不匹配 -300 分
+      }
+
+      // 2. 标签匹配得分
+      const tableGuestTags = table.assignments.flatMap((a) => a.guest.tags);
+      const matchingTags = guest.tags.filter((t) => tableGuestTags.includes(t));
+      score += matchingTags.length * 100; // 每个匹配标签 +100 分
+
+      // 3. 如果桌位已有相同标签的宾客，额外加分
+      if (matchingTags.length > 0 && table.assignments.length > 0) {
+        score += 150; // 优先填充已有相同标签的桌位
+      }
+
+      // 4. 空间利用率得分（优先选择刚好能坐下的桌位）
+      const remainingAfter = availableSeats - guest.headCount;
+      if (remainingAfter === 0) {
+        score += 30; // 刚好坐满加分
+      } else if (remainingAfter <= 2) {
+        score += 20; // 接近坐满也加分
+      }
+
+      // 5. 空桌处理
+      if (table.assignments.length === 0) {
+        // 如果是空桌且区域匹配，可以开新桌
+        if (areaMatched) {
+          score += 50;
+        } else if (!guest.areaId && !table.areaId) {
+          // 都没有区域，中性
+          score += 0;
+        } else {
+          // 避免过早开不匹配的桌
+          score -= 100;
+        }
+      }
+
+      return score;
+    };
+
+    // 辅助函数：检查约束冲突
+    const hasConstraintConflict = (
+      guest: (typeof unassignedGuests)[0],
+      table: (typeof tables)[0]
+    ) => {
+      const tableGuestIds = table.assignments.map((a) => a.guest.id);
+      const allConstraints = [...guest.constraints1, ...guest.constraints2];
+
+      for (const constraint of allConstraints) {
+        const otherGuestId =
+          constraint.guest1Id === guest.id
+            ? constraint.guest2Id
+            : constraint.guest1Id;
+
+        if (
+          constraint.constraintType === "MUST_APART" &&
+          tableGuestIds.includes(otherGuestId)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // 辅助函数：安排单个宾客
+    const assignGuest = async (guest: (typeof unassignedGuests)[0]) => {
+      let bestTable: (typeof tables)[0] | null = null;
+      let bestScore = -Infinity;
 
       for (const table of tables) {
         const occupiedSeats = table.assignments.reduce(
@@ -654,32 +846,14 @@ router.post(
         );
         const availableSeats = table.capacity - occupiedSeats;
 
+        // 检查容量
         if (availableSeats < guest.headCount) continue;
 
-        // 检查约束
-        const tableGuestIds = table.assignments.map(a => a.guest.id);
-        let hasConflict = false;
+        // 检查约束冲突
+        if (hasConstraintConflict(guest, table)) continue;
 
-        const allConstraints = [...guest.constraints1, ...guest.constraints2];
-
-        for (const constraint of allConstraints) {
-          const otherGuestId = constraint.guest1Id === guest.id
-            ? constraint.guest2Id
-            : constraint.guest1Id;
-
-          if (constraint.constraintType === 'MUST_APART' && tableGuestIds.includes(otherGuestId)) {
-            hasConflict = true;
-            break;
-          }
-        }
-
-        if (hasConflict) continue;
-
-        // 计算分数
-        let score = 0;
-        const tableGuestTags = table.assignments.flatMap(a => a.guest.tags);
-        const matchingTags = guest.tags.filter(t => tableGuestTags.includes(t));
-        score += matchingTags.length * 10;
+        // 计算得分
+        const score = calculateTableScore(table, guest, occupiedSeats);
 
         if (score > bestScore) {
           bestScore = score;
@@ -710,18 +884,26 @@ router.post(
           guestName: guest.name,
           tableName: bestTable.name,
         });
+        return true;
       } else {
         results.failed++;
         results.details.push({
           guestName: guest.name,
-          error: '没有合适的桌位',
+          error: "没有合适的桌位",
         });
+        return false;
       }
+    };
+
+    // ===== 开始排座 =====
+    // 按区域优先、标签次之的顺序安排宾客
+    for (const guest of sortedGuests) {
+      await assignGuest(guest);
     }
 
     // 发送 Socket 事件
-    const io = req.app.get('io');
-    io.to(`project:${projectId}`).emit('seating:auto-assigned', results);
+    const io = req.app.get("io");
+    io.to(`project:${projectId}`).emit("seating:auto-assigned", results);
 
     res.json({
       success: true,
@@ -732,4 +914,3 @@ router.post(
 );
 
 export default router;
-
