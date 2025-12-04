@@ -253,6 +253,42 @@ VITE_SOCKET_URL=http://localhost:3001
 - `PUT /api/seating/move` - 移动宾客
 - `POST /api/seating/auto-assign` - 自动排座
 
+## 🔄 CI/CD
+
+项目使用 GitHub Actions 自动构建和推送 Docker 镜像。
+
+### 自动构建触发条件
+
+- 推送到 `main` / `master` 分支
+- 创建版本标签 `v*`（如 `v1.0.0`）
+- 手动触发
+
+### 使用预构建镜像部署
+
+```bash
+# 1. 下载生产环境配置
+wget https://raw.githubusercontent.com/your-username/wedding-seating/main/docker-compose.prod.yml
+
+# 2. 创建环境变量文件
+cat > .env << EOF
+POSTGRES_PASSWORD=your-secure-password
+JWT_SECRET=your-jwt-secret-at-least-32-characters
+JWT_REFRESH_SECRET=your-refresh-secret-at-least-32-characters
+SERVER_IMAGE=ghcr.io/your-username/wedding-seating-server:latest
+CLIENT_IMAGE=ghcr.io/your-username/wedding-seating-client:latest
+EOF
+
+# 3. 启动服务
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### GitHub Secrets 配置
+
+如果使用 Docker Hub，需要在仓库设置中添加以下 Secrets：
+
+- `DOCKERHUB_USERNAME`: Docker Hub 用户名
+- `DOCKERHUB_TOKEN`: Docker Hub Access Token
+
 ## 📄 License
 
 MIT License
