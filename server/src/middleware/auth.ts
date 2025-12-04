@@ -8,8 +8,7 @@ const prisma = new PrismaClient();
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    email: string | null;
-    phone: string | null;
+    email: string;
     nickname: string;
   };
 }
@@ -34,7 +33,7 @@ export const authenticate = async (
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, phone: true, nickname: true },
+      select: { id: true, email: true, nickname: true },
     });
 
     if (!user) {

@@ -314,17 +314,28 @@ router.post(
         resolvedAreaId = areaId || null;
       }
 
+      // 获取并转换手机号为字符串（Excel 可能将手机号读取为数字）
+      const rawPhone = row["手机号"] || row["phone"] || row["Phone"];
+      const phone = rawPhone != null ? String(rawPhone) : null;
+
+      // 获取并转换标签
+      const rawTags = row["标签"] || row["tags"] || row["Tags"];
+      const tags = rawTags
+        ? String(rawTags)
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
+
       try {
         await prisma.guest.create({
           data: {
             projectId,
-            name,
+            name: String(name),
             headCount,
-            phone: row["手机号"] || row["phone"] || row["Phone"] || null,
+            phone,
             relationship: row["关系"] || row["relationship"] || null,
-            tags: row["标签"]
-              ? (row["标签"] as string).split(",").map((t) => t.trim())
-              : [],
+            tags,
             notes: row["备注"] || row["notes"] || null,
             areaId: resolvedAreaId,
             createdById: userId,
