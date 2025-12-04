@@ -35,6 +35,8 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-wedding}:${POSTGRES_PASSWORD:-wedding123}@postgres:5432/${POSTGRES_DB:-wedding_seating}
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-refresh-secret-in-production}
+      # 邀请链接地址 - 请修改为实际访问地址（域名或IP）
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:18080}
       CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:18080}
     depends_on:
       postgres:

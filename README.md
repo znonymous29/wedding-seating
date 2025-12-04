@@ -204,7 +204,10 @@ JWT_REFRESH_EXPIRES_IN="7d"
 PORT=3001
 NODE_ENV=development
 
-# 前端地址（CORS）
+# 前端地址（用于 CORS 和生成邀请链接）
+# 开发环境示例: http://localhost:5173
+# 生产域名示例: https://wedding.example.com
+# 生产 IP 示例: http://192.168.1.100:18080
 CLIENT_URL=http://localhost:5173
 ```
 
@@ -268,16 +271,35 @@ VITE_SOCKET_URL=http://localhost:3001
 ```bash
 # 1. 下载生产环境配置
 wget https://raw.githubusercontent.com/your-username/wedding-seating/main/docker-compose.prod.yml
+wget https://raw.githubusercontent.com/your-username/wedding-seating/main/docker.env.example -O .env
 
-# 2. 创建环境变量文件
-cat > .env << EOF
-POSTGRES_PASSWORD=your-secure-password
-JWT_SECRET=your-jwt-secret-at-least-32-characters
-JWT_REFRESH_SECRET=your-refresh-secret-at-least-32-characters
+# 2. 编辑环境变量文件
+nano .env
+```
+
+**必须修改的配置：**
+
+```env
+# Docker 镜像地址
 SERVER_IMAGE=ghcr.io/your-username/wedding-seating-server:latest
 CLIENT_IMAGE=ghcr.io/your-username/wedding-seating-client:latest
-EOF
 
+# 数据库密码
+POSTGRES_PASSWORD=your-secure-password
+
+# JWT 密钥（至少32位字符）
+JWT_SECRET=your-jwt-secret-at-least-32-characters
+JWT_REFRESH_SECRET=your-refresh-secret-at-least-32-characters
+
+# ⚠️ 重要：邀请链接地址
+# 请修改为您的实际访问地址，用于生成正确的邀请链接
+# 使用域名示例：https://wedding.example.com
+# 使用 IP 示例：http://192.168.1.100:18080
+CLIENT_URL=http://your-domain-or-ip:18080
+CORS_ORIGIN=http://your-domain-or-ip:18080
+```
+
+```bash
 # 3. 启动服务
 docker-compose -f docker-compose.prod.yml up -d
 ```

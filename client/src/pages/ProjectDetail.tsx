@@ -8,7 +8,16 @@ import {
   useLocation,
 } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Layout, Menu, Avatar, Tooltip, Statistic, Spin, message } from "antd";
+import {
+  Layout,
+  Menu,
+  Avatar,
+  Tooltip,
+  Statistic,
+  Spin,
+  message,
+  Dropdown,
+} from "antd";
 import {
   ArrowLeftOutlined,
   TeamOutlined,
@@ -17,6 +26,7 @@ import {
   BarChartOutlined,
   SettingOutlined,
   UserOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { projectApi } from "../services/api";
@@ -48,9 +58,34 @@ export default function ProjectDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
   const [onlineMembers, setOnlineMembers] = useState<OnlineMember[]>([]);
+
+  // 退出登录
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  // 用户菜单
+  const userMenuItems = [
+    {
+      key: "profile",
+      icon: <UserOutlined />,
+      label: "个人设置",
+    },
+    {
+      type: "divider" as const,
+    },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: "退出登录",
+      danger: true,
+      onClick: handleLogout,
+    },
+  ];
 
   // 获取项目详情
   const {
@@ -268,7 +303,16 @@ export default function ProjectDetail() {
         </div>
 
         <div className={styles.headerRight}>
-          <SettingOutlined className={styles.headerIcon} />
+          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <div className={styles.userInfo}>
+              <Avatar
+                src={user?.avatar}
+                icon={<UserOutlined />}
+                className={styles.avatar}
+              />
+              <span className={styles.userName}>{user?.nickname}</span>
+            </div>
+          </Dropdown>
         </div>
       </Header>
 

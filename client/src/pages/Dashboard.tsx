@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   Button,
@@ -11,11 +11,10 @@ import {
   InputNumber,
   message,
   Progress,
-  Empty,
   Dropdown,
   Avatar,
   Spin,
-} from 'antd'
+} from "antd";
 import {
   PlusOutlined,
   CalendarOutlined,
@@ -25,124 +24,124 @@ import {
   LogoutOutlined,
   UserOutlined,
   SettingOutlined,
-} from '@ant-design/icons'
-import dayjs from 'dayjs'
-import { projectApi } from '../services/api'
-import { useAuthStore } from '../stores/authStore'
-import styles from './Dashboard.module.css'
+} from "@ant-design/icons";
+import dayjs from "dayjs";
+import { projectApi } from "../services/api";
+import { useAuthStore } from "../stores/authStore";
+import styles from "./Dashboard.module.css";
 
 interface Project {
-  id: string
-  name: string
-  weddingDate: string | null
-  venue: string | null
-  coverImage: string | null
-  status: string
-  myRole: string
+  id: string;
+  name: string;
+  weddingDate: string | null;
+  venue: string | null;
+  coverImage: string | null;
+  status: string;
+  myRole: string;
   owner: {
-    id: string
-    nickname: string
-    avatar: string | null
-  }
+    id: string;
+    nickname: string;
+    avatar: string | null;
+  };
   stats: {
-    totalGuests: number
-    assignedGuests: number
-    tableCount: number
-  }
+    totalGuests: number;
+    assignedGuests: number;
+    tableCount: number;
+  };
 }
 
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const { user, logout } = useAuthStore()
-  const [createModalOpen, setCreateModalOpen] = useState(false)
-  const [form] = Form.useForm()
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user, logout } = useAuthStore();
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [form] = Form.useForm();
 
   // 获取项目列表
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects'],
+    queryKey: ["projects"],
     queryFn: async () => {
-      const response = await projectApi.getAll()
-      return response.data.data as Project[]
+      const response = await projectApi.getAll();
+      return response.data.data as Project[];
     },
-  })
+  });
 
   // 创建项目
   const createMutation = useMutation({
     mutationFn: projectApi.create,
     onSuccess: (response) => {
       if (response.data.success) {
-        message.success('项目创建成功！')
-        setCreateModalOpen(false)
-        form.resetFields()
-        queryClient.invalidateQueries({ queryKey: ['projects'] })
-        navigate(`/project/${response.data.data.id}`)
+        message.success("项目创建成功！");
+        setCreateModalOpen(false);
+        form.resetFields();
+        queryClient.invalidateQueries({ queryKey: ["projects"] });
+        navigate(`/project/${response.data.data.id}`);
       }
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || '创建失败')
+      message.error(error.response?.data?.message || "创建失败");
     },
-  })
+  });
 
   // 删除项目
   const deleteMutation = useMutation({
     mutationFn: projectApi.delete,
     onSuccess: () => {
-      message.success('项目已删除')
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      message.success("项目已删除");
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
     },
     onError: (error: any) => {
-      message.error(error.response?.data?.message || '删除失败')
+      message.error(error.response?.data?.message || "删除失败");
     },
-  })
+  });
 
   const handleCreateProject = (values: any) => {
     createMutation.mutate({
       name: values.name,
-      weddingDate: values.weddingDate?.format('YYYY-MM-DD'),
+      weddingDate: values.weddingDate?.format("YYYY-MM-DD"),
       venue: values.venue,
       defaultSeatsPerTable: values.defaultSeatsPerTable,
-    })
-  }
+    });
+  };
 
   const handleDeleteProject = (projectId: string) => {
     Modal.confirm({
-      title: '确认删除',
-      content: '删除后项目数据将无法恢复，确定要删除吗？',
-      okText: '删除',
+      title: "确认删除",
+      content: "删除后项目数据将无法恢复，确定要删除吗？",
+      okText: "删除",
       okButtonProps: { danger: true },
-      cancelText: '取消',
+      cancelText: "取消",
       onOk: () => deleteMutation.mutate(projectId),
-    })
-  }
+    });
+  };
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate("/login");
+  };
 
   const userMenuItems = [
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
-      label: '个人设置',
+      label: "个人设置",
     },
     {
-      type: 'divider' as const,
+      type: "divider" as const,
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: "退出登录",
       danger: true,
       onClick: handleLogout,
     },
-  ]
+  ];
 
   // 我创建的项目
-  const myProjects = projects?.filter((p) => p.myRole === 'OWNER') || []
+  const myProjects = projects?.filter((p) => p.myRole === "OWNER") || [];
   // 我参与的项目
-  const joinedProjects = projects?.filter((p) => p.myRole !== 'OWNER') || []
+  const joinedProjects = projects?.filter((p) => p.myRole !== "OWNER") || [];
 
   return (
     <div className={styles.container}>
@@ -176,7 +175,7 @@ export default function Dashboard() {
         {/* 我的项目 */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>我的项目</h2>
-          
+
           {isLoading ? (
             <div className={styles.loading}>
               <Spin size="large" />
@@ -241,16 +240,18 @@ export default function Dashboard() {
           <Form.Item
             name="name"
             label="项目名称"
-            rules={[{ required: true, message: '请输入项目名称' }]}
+            rules={[{ required: true, message: "请输入项目名称" }]}
           >
             <Input placeholder="例如：张三 & 李四的婚礼" />
           </Form.Item>
 
           <Form.Item name="weddingDate" label="婚礼日期">
             <DatePicker
-              style={{ width: '100%' }}
+              style={{ width: "100%" }}
               placeholder="选择婚礼日期"
-              disabledDate={(current) => current && current < dayjs().startOf('day')}
+              disabledDate={(current) =>
+                current && current < dayjs().startOf("day")
+              }
             />
           </Form.Item>
 
@@ -259,7 +260,7 @@ export default function Dashboard() {
           </Form.Item>
 
           <Form.Item name="defaultSeatsPerTable" label="每桌默认人数">
-            <InputNumber min={4} max={20} style={{ width: '100%' }} />
+            <InputNumber min={4} max={20} style={{ width: "100%" }} />
           </Form.Item>
 
           <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
@@ -276,51 +277,59 @@ export default function Dashboard() {
         </Form>
       </Modal>
     </div>
-  )
+  );
 }
 
 // 项目卡片组件
 interface ProjectCardProps {
-  project: Project
-  onEnter: () => void
-  onDelete?: () => void
-  showRole?: boolean
+  project: Project;
+  onEnter: () => void;
+  onDelete?: () => void;
+  showRole?: boolean;
 }
 
-function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps) {
-  const progress = project.stats.totalGuests > 0
-    ? Math.round((project.stats.assignedGuests / project.stats.totalGuests) * 100)
-    : 0
+function ProjectCard({
+  project,
+  onEnter,
+  onDelete,
+  showRole,
+}: ProjectCardProps) {
+  const progress =
+    project.stats.totalGuests > 0
+      ? Math.round(
+          (project.stats.assignedGuests / project.stats.totalGuests) * 100
+        )
+      : 0;
 
   const daysUntilWedding = project.weddingDate
-    ? dayjs(project.weddingDate).diff(dayjs(), 'day')
-    : null
+    ? dayjs(project.weddingDate).diff(dayjs(), "day")
+    : null;
 
   const menuItems = [
     {
-      key: 'settings',
+      key: "settings",
       icon: <SettingOutlined />,
-      label: '项目设置',
+      label: "项目设置",
     },
     ...(onDelete
       ? [
-          { type: 'divider' as const },
+          { type: "divider" as const },
           {
-            key: 'delete',
+            key: "delete",
             icon: <LogoutOutlined />,
-            label: '删除项目',
+            label: "删除项目",
             danger: true,
             onClick: onDelete,
           },
         ]
       : []),
-  ]
+  ];
 
   const roleLabels: Record<string, string> = {
-    OWNER: '主办人',
-    COLLABORATOR: '协作者',
-    VIEWER: '只读',
-  }
+    OWNER: "主办人",
+    COLLABORATOR: "协作者",
+    VIEWER: "只读",
+  };
 
   return (
     <Card className={`${styles.projectCard} hover-card`}>
@@ -330,7 +339,7 @@ function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps)
         style={{
           background: project.coverImage
             ? `url(${project.coverImage}) center/cover`
-            : 'linear-gradient(135deg, #B76E79 0%, #D4A5A5 100%)',
+            : "linear-gradient(135deg, #B76E79 0%, #D4A5A5 100%)",
         }}
       >
         {daysUntilWedding !== null && daysUntilWedding >= 0 && (
@@ -339,9 +348,7 @@ function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps)
           </div>
         )}
         {showRole && (
-          <div className={styles.roleTag}>
-            {roleLabels[project.myRole]}
-          </div>
+          <div className={styles.roleTag}>{roleLabels[project.myRole]}</div>
         )}
       </div>
 
@@ -349,7 +356,7 @@ function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps)
       <div className={styles.projectInfo}>
         <div className={styles.projectHeader}>
           <h3 className={styles.projectName}>{project.name}</h3>
-          <Dropdown menu={{ items: menuItems }} trigger={['click']}>
+          <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
             <Button type="text" icon={<MoreOutlined />} size="small" />
           </Dropdown>
         </div>
@@ -357,7 +364,8 @@ function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps)
         <div className={styles.projectMeta}>
           {project.weddingDate && (
             <span>
-              <CalendarOutlined /> {dayjs(project.weddingDate).format('YYYY.MM.DD')}
+              <CalendarOutlined />{" "}
+              {dayjs(project.weddingDate).format("YYYY.MM.DD")}
             </span>
           )}
           {project.venue && (
@@ -389,6 +397,5 @@ function ProjectCard({ project, onEnter, onDelete, showRole }: ProjectCardProps)
         </Button>
       </div>
     </Card>
-  )
+  );
 }
-

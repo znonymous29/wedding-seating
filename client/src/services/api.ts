@@ -95,7 +95,7 @@ export const authApi = {
     phone?: string;
   }) => api.post<ApiResponse>("/auth/register", data),
 
-  login: (data: { email: string; password: string }) =>
+  login: (data: { account: string; password: string }) =>
     api.post<ApiResponse>("/auth/login", data),
 
   getMe: () => api.get<ApiResponse>("/auth/me"),

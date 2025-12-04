@@ -90,6 +90,29 @@
   gap: 16px;
 }
 
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 12px 4px 4px;
+  border-radius: 24px;
+  transition: background 0.2s;
+}
+
+.userInfo:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.avatar {
+  background: var(--primary-light);
+}
+
+.userName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
 .headerIcon {
   font-size: 18px;
   color: var(--text-secondary);
@@ -200,6 +223,14 @@
   
   .headerRight {
     gap: 8px;
+  }
+  
+  .userInfo {
+    padding: 4px;
+  }
+  
+  .userName {
+    display: none;
   }
   
   .headerIcon {

@@ -105,11 +105,11 @@ router.post(
   })
 );
 
-// 登录
+// 登录（支持邮箱或手机号）
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("请输入有效的邮箱地址"),
+    body("account").notEmpty().withMessage("请输入邮箱或手机号"),
     body("password").notEmpty().withMessage("请输入密码"),
   ],
   asyncHandler(async (req: AuthRequest, res: any) => {
@@ -118,21 +118,29 @@ router.post(
       throw new AppError(errors.array()[0].msg, 400);
     }
 
-    const { email, password } = req.body;
+    const { account, password } = req.body;
 
-    // 查找用户
-    const user = await prisma.user.findUnique({
-      where: { email },
+    // 判断是邮箱还是手机号
+    const isEmail = account.includes("@");
+    const isPhone = /^1[3-9]\d{9}$/.test(account);
+
+    if (!isEmail && !isPhone) {
+      throw new AppError("请输入有效的邮箱或手机号", 400);
+    }
+
+    // 查找用户（通过邮箱或手机号）
+    const user = await prisma.user.findFirst({
+      where: isEmail ? { email: account } : { phone: account },
     });
 
     if (!user) {
-      throw new AppError("邮箱或密码错误", 401);
+      throw new AppError("账号或密码错误", 401);
     }
 
     // 验证密码
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      throw new AppError("邮箱或密码错误", 401);
+      throw new AppError("账号或密码错误", 401);
     }
 
     // 生成 token
