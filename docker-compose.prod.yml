@@ -1,7 +1,9 @@
-version: "3.8"
-
 # 生产环境部署配置
 # 使用预构建的 Docker 镜像
+#
+# 使用前请先创建 .env 文件：
+# cp docker.env.example .env
+# 然后编辑 .env 填入实际值
 
 services:
   postgres:
@@ -10,7 +12,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-wedding}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-wedding123}
       POSTGRES_DB: ${POSTGRES_DB:-wedding_seating}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -23,20 +25,17 @@ services:
       retries: 5
 
   server:
-    # 使用 GitHub Container Registry 镜像
-    # image: ghcr.io/你的用户名/wedding-seating-server:latest
-    # 或者使用 Docker Hub 镜像
-    # image: 你的用户名/wedding-seating-server:latest
-    image: ${SERVER_IMAGE}
+    # 修改为你的镜像地址
+    image: ${SERVER_IMAGE:-ghcr.io/znonymous29/wedding-seating-server:latest}
     container_name: wedding-server
     restart: always
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://${POSTGRES_USER:-wedding}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-wedding_seating}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      CORS_ORIGIN: ${CORS_ORIGIN:-https://your-domain.com}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-wedding}:${POSTGRES_PASSWORD:-wedding123}@postgres:5432/${POSTGRES_DB:-wedding_seating}
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-refresh-secret-in-production}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:18080}
     depends_on:
       postgres:
         condition: service_healthy
@@ -44,20 +43,16 @@ services:
       - wedding-network
 
   client:
-    # image: ghcr.io/你的用户名/wedding-seating-client:latest
-    image: ${CLIENT_IMAGEt}
+    # 修改为你的镜像地址
+    image: ${CLIENT_IMAGE:-ghcr.io/znonymous29/wedding-seating-client:latest}
     container_name: wedding-client
     restart: always
     ports:
-      - "18080:80"
-      - "18443:443"
+      - "${CLIENT_PORT:-18080}:80"
     depends_on:
       - server
     networks:
       - wedding-network
-    # 如需 HTTPS，挂载证书
-    # volumes:
-    #   - ./certs:/etc/nginx/certs:ro
 
 volumes:
   postgres_data:
