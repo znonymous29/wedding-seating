@@ -185,4 +185,92 @@ a:hover {
 @media (max-width: 768px) {
   h1 { font-size: 1.5rem; }
   h2 { font-size: 1.25rem; }
+  
+  /* 移动端禁用 hover 效果，提升触摸体验 */
+  .hover-card:hover {
+    transform: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  /* 移动端触摸反馈 */
+  .hover-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s;
+  }
+  
+  /* 移动端 Modal 优化 */
+  .ant-modal {
+    max-width: calc(100vw - 32px) !important;
+    margin: 16px !important;
+  }
+  
+  .ant-modal-content {
+    border-radius: 12px !important;
+  }
+  
+  /* 移动端按钮增大触摸区域 */
+  .ant-btn {
+    min-height: 40px;
+  }
+  
+  /* 移动端表格横向滚动 */
+  .ant-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .ant-table {
+    min-width: 600px;
+  }
+  
+  /* 移动端 Select 和 Input */
+  .ant-select,
+  .ant-input,
+  .ant-input-affix-wrapper {
+    min-height: 40px !important;
+  }
+  
+  /* 移动端滚动条隐藏 */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  h1 { font-size: 1.25rem; }
+  h2 { font-size: 1.1rem; }
+  h3 { font-size: 1rem; }
+  
+  body {
+    font-size: 14px;
+  }
+  
+  /* 更紧凑的间距 */
+  .ant-card-body {
+    padding: 12px !important;
+  }
+}
+
+/* 移动端底部安全区适配 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  /* 增大可点击区域 */
+  button,
+  .ant-btn,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* 禁用悬停效果 */
+  *:hover {
+    transition: none !important;
+  }
 }

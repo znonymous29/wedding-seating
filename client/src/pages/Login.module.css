@@ -222,7 +222,7 @@
   line-height: 1.8;
 }
 
-/* 响应式 */
+/* 响应式 - 平板 */
 @media (max-width: 768px) {
   .cardWrapper {
     flex-direction: column;
@@ -230,11 +230,14 @@
 
   .card {
     padding: 32px 24px;
+    min-width: unset;
   }
 
   .illustration {
     padding: 32px;
     min-height: 200px;
+    min-width: unset;
+    order: -1; /* 移动端插图在上方 */
   }
 
   .illustrationContent h2 {
@@ -243,6 +246,74 @@
 
   .weddingRings {
     font-size: 48px;
+  }
+  
+  .otherMethods {
+    flex-direction: column;
+  }
+}
+
+/* 响应式 - 手机 */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .cardWrapper {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(183, 110, 121, 0.12);
+  }
+
+  .card {
+    padding: 24px 20px;
+  }
+  
+  .logo {
+    margin-bottom: 24px;
+  }
+  
+  .logoText {
+    font-size: 24px;
+  }
+  
+  .logoSubtext {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+
+  .illustration {
+    padding: 24px;
+    min-height: 160px;
+  }
+
+  .illustrationContent h2 {
+    font-size: 18px;
+  }
+
+  .illustrationContent p {
+    font-size: 13px;
+  }
+
+  .weddingRings {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  
+  .submitBtn {
+    height: 46px !important;
+    font-size: 15px !important;
+  }
+  
+  .input {
+    padding: 10px 14px !important;
+  }
+  
+  .divider {
+    margin: 20px 0;
+  }
+  
+  .registerLink {
+    font-size: 13px;
   }
 }
 

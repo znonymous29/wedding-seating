@@ -159,3 +159,87 @@
   color: var(--error) !important;
 }
 
+/* 响应式 - 手机 */
+@media (max-width: 768px) {
+  .table {
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 130px;
+  }
+  
+  .header {
+    margin-bottom: 6px;
+  }
+  
+  .tableName {
+    gap: 4px;
+  }
+  
+  .name {
+    font-size: 14px;
+  }
+  
+  .areaTag {
+    font-size: 10px;
+  }
+  
+  .statusTag {
+    font-size: 10px;
+  }
+  
+  .capacity {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    gap: 3px;
+  }
+  
+  .capacity span {
+    font-size: 11px;
+  }
+  
+  .emptyHint {
+    min-height: 50px;
+    font-size: 12px;
+  }
+  
+  .guestItem {
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+  
+  .guestIcon {
+    font-size: 11px;
+  }
+  
+  .guestCount {
+    font-size: 11px;
+  }
+  
+  /* 移动端始终显示操作按钮 */
+  .editTableBtn,
+  .deleteTableBtn,
+  .removeBtn {
+    opacity: 0.6;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .table {
+    padding: 10px;
+    min-height: 120px;
+  }
+  
+  .name {
+    font-size: 13px;
+  }
+  
+  .guestList {
+    gap: 4px;
+  }
+  
+  .guestItem {
+    padding: 4px 5px;
+  }
+}
+

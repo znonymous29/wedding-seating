@@ -20,3 +20,36 @@
   margin-bottom: 16px;
 }
 
+/* 响应式 - 手机 */
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+  }
+  
+  .container :global(.ant-card) {
+    border-radius: 10px;
+  }
+  
+  .container :global(.ant-tabs-nav) {
+    margin-bottom: 16px;
+  }
+  
+  .container :global(.ant-tabs-tab) {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .inviteLinkBox p {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .container :global(.ant-tabs-tab) {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+

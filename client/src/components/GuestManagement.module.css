@@ -54,19 +54,35 @@
   margin-top: 16px;
 }
 
-/* 响应式 */
+/* 响应式 - 平板 */
+@media (max-width: 992px) {
+  .container {
+    padding: 20px;
+  }
+  
+  .summary {
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+}
+
+/* 响应式 - 手机 */
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 12px;
+    border-radius: 12px;
   }
 
   .toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
   }
 
   .filters {
     flex-direction: column;
+    gap: 8px;
   }
 
   .filters > * {
@@ -74,7 +90,54 @@
   }
 
   .actions {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .actions > * {
+    flex: 1;
+    min-width: 45%;
+  }
+  
+  .summary {
+    gap: 12px;
+    padding: 10px 0;
+    margin-bottom: 12px;
+    font-size: 13px;
+    flex-wrap: wrap;
+  }
+  
+  .importContent {
+    padding: 12px 0;
+  }
+  
+  .importContent p {
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .toolbar {
+    gap: 8px;
+  }
+  
+  .actions {
+    gap: 8px;
+  }
+  
+  .actions > * {
+    min-width: 100%;
+  }
+  
+  .summary {
+    font-size: 12px;
+    gap: 8px;
   }
 }
 

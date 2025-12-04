@@ -158,26 +158,164 @@
   overflow-y: auto;
 }
 
-/* 响应式 */
+/* 响应式 - 平板 */
+@media (max-width: 992px) {
+  .statsOverview {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  
+  .statItem :global(.ant-statistic-content) {
+    font-size: 18px !important;
+  }
+}
+
+/* 响应式 - 手机 */
 @media (max-width: 768px) {
   .header {
     padding: 0 12px;
+    height: 56px;
   }
 
   .projectTitle h1 {
     font-size: 16px;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .backBtn {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .headerLeft {
+    gap: 8px;
   }
 
   .onlineMembers {
     display: none;
   }
+  
+  .headerRight {
+    gap: 8px;
+  }
+  
+  .headerIcon {
+    font-size: 16px;
+  }
+
+  /* 隐藏侧边栏 */
+  .sider {
+    display: none !important;
+  }
 
   .content {
     padding: 12px;
+    padding-bottom: 80px; /* 为底部导航留空间 */
+    min-height: calc(100vh - 56px - 60px);
   }
 
   .statsOverview {
-    grid-template-columns: 1fr;
+    display: none;
+  }
+}
+
+/* 移动端底部导航 */
+.mobileNav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileNav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: white;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .mobileNavItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 10px;
+    transition: color 0.2s;
+    padding: 8px 4px;
+  }
+  
+  .mobileNavItem:active {
+    background: rgba(183, 110, 121, 0.05);
+  }
+  
+  .mobileNavItem.active {
+    color: var(--primary);
+  }
+  
+  .mobileNavIcon {
+    font-size: 20px;
+    line-height: 1;
+  }
+  
+  .mobileNavLabel {
+    line-height: 1;
+  }
+}
+
+/* 移动端统计概览条 */
+.mobileStats {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobileStats {
+    display: flex;
+    background: white;
+    padding: 8px 12px;
+    margin: -12px -12px 12px -12px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    gap: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .mobileStats::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobileStatItem {
+    flex-shrink: 0;
+    text-align: center;
+    min-width: 60px;
+  }
+  
+  .mobileStatValue {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+  
+  .mobileStatValue.highlight {
+    color: var(--primary);
+  }
+  
+  .mobileStatLabel {
+    font-size: 11px;
+    color: var(--text-secondary);
   }
 }
 

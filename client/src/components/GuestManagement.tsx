@@ -53,7 +53,7 @@ interface GuestManagementProps {
 }
 
 // 预设标签
-const PRESET_TAGS = ["亲戚", "朋友", "同事", "领导", "VIP", "师长"];
+const PRESET_TAGS = ["亲戚", "朋友", "同事", "领导", "VIP"];
 
 // 标签颜色映射
 const TAG_COLORS: Record<string, string> = {

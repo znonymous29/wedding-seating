@@ -62,3 +62,72 @@
   color: var(--text-secondary);
 }
 
+/* 响应式 - 手机 */
+@media (max-width: 768px) {
+  .guestCard {
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+  
+  .guestCard:hover {
+    transform: none; /* 移动端禁用 hover 效果 */
+    box-shadow: none;
+  }
+  
+  .guestCard:active {
+    background: rgba(183, 110, 121, 0.08);
+    border-color: var(--primary-light);
+  }
+  
+  .icon {
+    font-size: 13px;
+  }
+  
+  .name {
+    font-size: 13px;
+  }
+  
+  .countTag {
+    font-size: 11px;
+  }
+  
+  .tags {
+    margin-top: 4px;
+    padding-left: 20px;
+    gap: 3px;
+  }
+  
+  .tag {
+    font-size: 10px;
+    padding: 0 5px;
+    line-height: 16px;
+  }
+  
+  .moreTags {
+    font-size: 10px;
+  }
+}
+
+/* 小屏幕手机 */
+@media (max-width: 480px) {
+  .guestCard {
+    padding: 6px 8px;
+  }
+  
+  .guestInfo {
+    gap: 6px;
+  }
+  
+  .icon {
+    font-size: 12px;
+  }
+  
+  .name {
+    font-size: 12px;
+  }
+  
+  .tags {
+    padding-left: 18px;
+  }
+}
+

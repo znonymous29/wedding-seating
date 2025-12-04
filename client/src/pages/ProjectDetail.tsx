@@ -5,6 +5,7 @@ import {
   Routes,
   Route,
   NavLink,
+  useLocation,
 } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Layout, Menu, Avatar, Tooltip, Statistic, Spin, message } from "antd";
@@ -45,6 +46,7 @@ interface OnlineMember {
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [collapsed, setCollapsed] = useState(false);
@@ -201,7 +203,7 @@ export default function ProjectDetail() {
 
   // 根据当前路径获取选中的菜单项
   const getSelectedKey = () => {
-    const path = window.location.pathname;
+    const path = location.pathname;
     if (path.includes("/guests")) return "guests";
     if (path.includes("/seating")) return "seating";
     if (path.includes("/floor-plan")) return "floor-plan";
@@ -209,6 +211,30 @@ export default function ProjectDetail() {
     if (path.includes("/settings")) return "settings";
     return "guests";
   };
+
+  // 移动端导航项
+  const mobileNavItems = [
+    { key: "guests", icon: <TeamOutlined />, label: "宾客", path: "guests" },
+    { key: "seating", icon: <TableOutlined />, label: "座位", path: "seating" },
+    {
+      key: "floor-plan",
+      icon: <AppstoreOutlined />,
+      label: "布局",
+      path: "floor-plan",
+    },
+    {
+      key: "statistics",
+      icon: <BarChartOutlined />,
+      label: "统计",
+      path: "statistics",
+    },
+    {
+      key: "settings",
+      icon: <SettingOutlined />,
+      label: "设置",
+      path: "settings",
+    },
+  ];
 
   return (
     <Layout className={styles.layout}>
@@ -311,6 +337,41 @@ export default function ProjectDetail() {
 
         {/* 主内容区 */}
         <Content className={styles.content}>
+          {/* 移动端统计概览条 */}
+          <div className={styles.mobileStats}>
+            <div className={styles.mobileStatItem}>
+              <div className={styles.mobileStatValue}>
+                {project.stats.totalGuests}
+              </div>
+              <div className={styles.mobileStatLabel}>总宾客</div>
+            </div>
+            <div className={styles.mobileStatItem}>
+              <div
+                className={`${styles.mobileStatValue}`}
+                style={{ color: "#6B9E78" }}
+              >
+                {project.stats.assignedGuests}
+              </div>
+              <div className={styles.mobileStatLabel}>已安排</div>
+            </div>
+            <div className={styles.mobileStatItem}>
+              <div className={styles.mobileStatValue}>
+                {project.stats.tableCount}
+              </div>
+              <div className={styles.mobileStatLabel}>桌位</div>
+            </div>
+            {daysUntilWedding !== null && daysUntilWedding >= 0 && (
+              <div className={styles.mobileStatItem}>
+                <div
+                  className={`${styles.mobileStatValue} ${styles.highlight}`}
+                >
+                  {daysUntilWedding}
+                </div>
+                <div className={styles.mobileStatLabel}>天后</div>
+              </div>
+            )}
+          </div>
+
           <Routes>
             <Route index element={<GuestManagement projectId={projectId!} />} />
             <Route
@@ -338,6 +399,24 @@ export default function ProjectDetail() {
           </Routes>
         </Content>
       </Layout>
+
+      {/* 移动端底部导航 */}
+      <nav className={styles.mobileNav}>
+        {mobileNavItems.map((item) => (
+          <NavLink
+            key={item.key}
+            to={`/project/${projectId}/${item.path}`}
+            className={({ isActive }) =>
+              `${styles.mobileNavItem} ${
+                isActive || getSelectedKey() === item.key ? styles.active : ""
+              }`
+            }
+          >
+            <span className={styles.mobileNavIcon}>{item.icon}</span>
+            <span className={styles.mobileNavLabel}>{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
     </Layout>
   );
 }
