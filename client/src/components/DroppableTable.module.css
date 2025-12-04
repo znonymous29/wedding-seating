@@ -1,10 +1,10 @@
 .table {
   background: var(--bg-cream);
   border-radius: 12px;
-  padding: 16px;
+  padding: 12px;
   border: 2px solid transparent;
   transition: all 0.2s;
-  min-height: 150px;
+
   display: flex;
   flex-direction: column;
 }
@@ -23,20 +23,24 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  gap: 4px;
 }
 
 .tableName {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-wrap: wrap;
+  min-width: 0;
+  flex: 1;
 }
 
 .name {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .areaTag {
@@ -86,26 +90,24 @@
 .capacity {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
+  gap: 3px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
   border-bottom: 1px dashed var(--border);
 }
 
 .capacity span {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
 }
 
 .guestList {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .emptyHint {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,7 +115,7 @@
   font-size: 13px;
   border: 2px dashed var(--border);
   border-radius: 8px;
-  min-height: 60px;
+  height: 50px;
 }
 
 .guestItem {
@@ -124,31 +126,52 @@
   background: white;
   border-radius: 6px;
   font-size: 13px;
+  min-width: 0; /* 允许 flex 子元素收缩 */
+  width: 100%; /* 确保占满父容器 */
+}
+
+/* Tooltip 的 span 包装器需要占满剩余空间 */
+.guestItem > span:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .guestInfo {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0; /* 允许内容收缩 */
+  width: 100%; /* 确保占满 Tooltip 包装器 */
+  overflow: hidden;
 }
 
 .guestIcon {
   color: var(--primary-light);
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .guestName {
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .guestCount {
   color: var(--text-secondary);
   font-size: 12px;
+  flex-shrink: 0;
+  margin-left: 2px;
 }
 
 .removeBtn {
   opacity: 0;
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .guestItem:hover .removeBtn {
