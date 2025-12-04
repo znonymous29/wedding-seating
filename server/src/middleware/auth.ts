@@ -1,14 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import { AppError } from './errorHandler';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
+import { AppError } from "./errorHandler";
 
 const prisma = new PrismaClient();
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    email: string;
+    email: string | null;
+    phone: string | null;
     nickname: string;
   };
 }
@@ -20,35 +21,34 @@ export const authenticate = async (
 ) => {
   try {
     const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AppError('请先登录', 401);
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new AppError("请先登录", 401);
     }
 
-    const token = authHeader.split(' ')[1];
-    
-    const decoded = jwt.verify(
-      token, 
-      process.env.JWT_SECRET || 'secret'
-    ) as { userId: string };
+    const token = authHeader.split(" ")[1];
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret") as {
+      userId: string;
+    };
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, nickname: true },
+      select: { id: true, email: true, phone: true, nickname: true },
     });
 
     if (!user) {
-      throw new AppError('用户不存在', 401);
+      throw new AppError("用户不存在", 401);
     }
 
     req.user = user;
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
-      return next(new AppError('无效的登录凭证', 401));
+      return next(new AppError("无效的登录凭证", 401));
     }
     if (error instanceof jwt.TokenExpiredError) {
-      return next(new AppError('登录已过期，请重新登录', 401));
+      return next(new AppError("登录已过期，请重新登录", 401));
     }
     next(error);
   }
@@ -65,7 +65,7 @@ export const isProjectMember = async (
     const userId = req.user?.id;
 
     if (!projectId || !userId) {
-      throw new AppError('缺少必要参数', 400);
+      throw new AppError("缺少必要参数", 400);
     }
 
     const member = await prisma.projectMember.findUnique({
@@ -78,7 +78,7 @@ export const isProjectMember = async (
     });
 
     if (!member) {
-      throw new AppError('您不是该项目的成员', 403);
+      throw new AppError("您不是该项目的成员", 403);
     }
 
     (req as any).memberRole = member.role;
@@ -98,8 +98,8 @@ export const isProjectAdmin = async (
   try {
     const memberRole = (req as any).memberRole;
 
-    if (memberRole === 'VIEWER') {
-      throw new AppError('您没有编辑权限', 403);
+    if (memberRole === "VIEWER") {
+      throw new AppError("您没有编辑权限", 403);
     }
 
     next();
@@ -117,8 +117,8 @@ export const isProjectOwner = async (
   try {
     const memberRole = (req as any).memberRole;
 
-    if (memberRole !== 'OWNER') {
-      throw new AppError('仅项目所有者可执行此操作', 403);
+    if (memberRole !== "OWNER") {
+      throw new AppError("仅项目所有者可执行此操作", 403);
     }
 
     next();
@@ -126,4 +126,3 @@ export const isProjectOwner = async (
     next(error);
   }
 };
-
