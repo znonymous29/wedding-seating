@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    email: string;
+    email: string | null;
     nickname: string;
   };
 }
