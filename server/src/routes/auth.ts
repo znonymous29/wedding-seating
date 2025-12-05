@@ -90,8 +90,8 @@ router.post(
     // 创建用户
     const user = await prisma.user.create({
       data: {
-        email: email || null,
-        phone: phone || null,
+        ...(email && { email }),
+        ...(phone && { phone }),
         passwordHash,
         nickname,
       },

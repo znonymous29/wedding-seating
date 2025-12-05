@@ -55,7 +55,10 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
   const { user, logout } = useAuthStore();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [form] = Form.useForm();
+  const [settingsForm] = Form.useForm();
 
   // 获取项目列表
   const { data: projects, isLoading } = useQuery({
@@ -95,6 +98,21 @@ export default function Dashboard() {
     },
   });
 
+  // 更新项目
+  const updateMutation = useMutation({
+    mutationFn: ({ projectId, data }: { projectId: string; data: any }) =>
+      projectApi.update(projectId, data),
+    onSuccess: () => {
+      message.success("项目设置已更新");
+      setSettingsModalOpen(false);
+      setEditingProject(null);
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+    },
+    onError: (error: any) => {
+      message.error(error.response?.data?.message || "更新失败");
+    },
+  });
+
   const handleCreateProject = (values: any) => {
     createMutation.mutate({
       name: values.name,
@@ -112,6 +130,28 @@ export default function Dashboard() {
       okButtonProps: { danger: true },
       cancelText: "取消",
       onOk: () => deleteMutation.mutate(projectId),
+    });
+  };
+
+  const handleOpenSettings = (project: Project) => {
+    setEditingProject(project);
+    settingsForm.setFieldsValue({
+      name: project.name,
+      weddingDate: project.weddingDate ? dayjs(project.weddingDate) : null,
+      venue: project.venue,
+    });
+    setSettingsModalOpen(true);
+  };
+
+  const handleUpdateProject = (values: any) => {
+    if (!editingProject) return;
+    updateMutation.mutate({
+      projectId: editingProject.id,
+      data: {
+        name: values.name,
+        weddingDate: values.weddingDate?.format("YYYY-MM-DD") || null,
+        venue: values.venue || null,
+      },
     });
   };
 
@@ -188,6 +228,7 @@ export default function Dashboard() {
                   project={project}
                   onEnter={() => navigate(`/project/${project.id}`)}
                   onDelete={() => handleDeleteProject(project.id)}
+                  onSettings={() => handleOpenSettings(project)}
                 />
               ))}
 
@@ -276,6 +317,52 @@ export default function Dashboard() {
           </Form.Item>
         </Form>
       </Modal>
+
+      {/* 项目设置弹窗 */}
+      <Modal
+        title="项目设置"
+        open={settingsModalOpen}
+        onCancel={() => {
+          setSettingsModalOpen(false);
+          setEditingProject(null);
+        }}
+        footer={null}
+        width={480}
+      >
+        <Form
+          form={settingsForm}
+          layout="vertical"
+          onFinish={handleUpdateProject}
+        >
+          <Form.Item
+            name="name"
+            label="项目名称"
+            rules={[{ required: true, message: "请输入项目名称" }]}
+          >
+            <Input placeholder="例如：张三 & 李四的婚礼" />
+          </Form.Item>
+
+          <Form.Item name="weddingDate" label="婚礼日期">
+            <DatePicker style={{ width: "100%" }} placeholder="选择婚礼日期" />
+          </Form.Item>
+
+          <Form.Item name="venue" label="婚礼地点">
+            <Input placeholder="例如：北京香格里拉大酒店" />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={updateMutation.isPending}
+              block
+              size="large"
+            >
+              保存设置
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </div>
   );
 }
@@ -285,6 +372,7 @@ interface ProjectCardProps {
   project: Project;
   onEnter: () => void;
   onDelete?: () => void;
+  onSettings?: () => void;
   showRole?: boolean;
 }
 
@@ -292,6 +380,7 @@ function ProjectCard({
   project,
   onEnter,
   onDelete,
+  onSettings,
   showRole,
 }: ProjectCardProps) {
   const progress =
@@ -306,11 +395,16 @@ function ProjectCard({
     : null;
 
   const menuItems = [
-    {
-      key: "settings",
-      icon: <SettingOutlined />,
-      label: "项目设置",
-    },
+    ...(onSettings
+      ? [
+          {
+            key: "settings",
+            icon: <SettingOutlined />,
+            label: "项目设置",
+            onClick: onSettings,
+          },
+        ]
+      : []),
     ...(onDelete
       ? [
           { type: "divider" as const },
