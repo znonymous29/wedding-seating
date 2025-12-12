@@ -14,12 +14,14 @@ interface AuthState {
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
+  _hasHydrated: boolean  // 标记 hydration 是否完成
   
   // Actions
   login: (user: User, accessToken: string, refreshToken: string) => void
   logout: () => void
   updateUser: (user: Partial<User>) => void
   setTokens: (accessToken: string, refreshToken: string) => void
+  setHasHydrated: (state: boolean) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,6 +31,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      _hasHydrated: false,
 
       login: (user, accessToken, refreshToken) => {
         set({
@@ -57,6 +60,10 @@ export const useAuthStore = create<AuthState>()(
       setTokens: (accessToken, refreshToken) => {
         set({ accessToken, refreshToken })
       },
+
+      setHasHydrated: (state) => {
+        set({ _hasHydrated: state })
+      },
     }),
     {
       name: 'wedding-seating-auth',
@@ -66,6 +73,10 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // hydration 完成后设置标记
+        state?.setHasHydrated(true)
+      },
     }
   )
 )

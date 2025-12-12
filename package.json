@@ -1,7 +1,8 @@
 {
   "name": "wedding-seating",
-  "version": "1.0.0",
-  "description": "Wedding seating arrangement management system",
+  "version": "1.4.0",
+  "description": "一个现代化的婚礼座位布置管理系统，支持多人实时协作",
+  "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "cd client && npm run dev",
@@ -11,14 +12,25 @@
     "build:server": "cd server && npm run build",
     "install:all": "npm install && cd client && npm install && cd ../server && npm install"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/znonymous29/wedding-seating.git"
+  },
   "keywords": [
     "wedding",
     "seating",
     "arrangement",
-    "collaboration"
+    "collaboration",
+    "real-time",
+    "react",
+    "typescript"
   ],
-  "author": "",
+  "author": "znonymous29",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/znonymous29/wedding-seating/issues"
+  },
+  "homepage": "https://github.com/znonymous29/wedding-seating#readme",
   "devDependencies": {
     "concurrently": "^9.1.0"
   }

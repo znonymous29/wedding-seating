@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>席位绘 - Wedding Seating | 现代化的婚礼座位布置管理系统</title>
+    <meta
+      name="description"
+      content="一个现代化的婚礼座位布置管理系统，支持多人实时协作。让婚礼座位安排变得简单、高效、有趣！"
+    />
+    <!-- Marked.js for markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Highlight.js for code syntax highlighting -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary-color: #b76e79;
+        --primary-dark: #8b4a5a;
+        --secondary-color: #e8d5c4;
+        --text-dark: #2c3e50;
+        --text-light: #7f8c8d;
+        --bg-light: #f8f9fa;
+        --white: #ffffff;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: var(--text-dark);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* Header */
+      header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-dark) 100%
+        );
+        color: var(--white);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        box-shadow: var(--shadow);
+      }
+
+      nav {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        list-style: none;
+      }
+
+      .nav-links a {
+        color: var(--white);
+        text-decoration: none;
+        transition: opacity 0.3s;
+      }
+
+      .nav-links a:hover {
+        opacity: 0.8;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          var(--primary-dark) 100%
+        );
+        color: var(--white);
+        padding: 6rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        animation: rotate 20s linear infinite;
+      }
+
+      @keyframes rotate {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.8s ease-out;
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+        opacity: 0.95;
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+      }
+
+      .badges {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+      }
+
+      .badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+      }
+
+      .btn {
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        display: inline-block;
+      }
+
+      .btn-primary {
+        background: var(--white);
+        color: var(--primary-color);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--white);
+        border: 2px solid var(--white);
+      }
+
+      .btn-secondary:hover {
+        background: var(--white);
+        color: var(--primary-color);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Features Section */
+      .features {
+        padding: 5rem 2rem;
+        background: var(--white);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--text-dark);
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: var(--text-light);
+        font-size: 1.1rem;
+        margin-bottom: 3rem;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .feature-card {
+        background: var(--bg-light);
+        padding: 2rem;
+        border-radius: 15px;
+        transition: all 0.3s;
+        border: 1px solid transparent;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--primary-color);
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+      }
+
+      .feature-card ul {
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .feature-card li {
+        padding: 0.5rem 0;
+        color: var(--text-light);
+        padding-left: 1.5rem;
+        position: relative;
+      }
+
+      .feature-card li::before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: var(--primary-color);
+        font-weight: bold;
+      }
+
+      /* Screenshots Section */
+      .screenshots {
+        padding: 5rem 2rem;
+        background: var(--bg-light);
+      }
+
+      .screenshots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .screenshot-card {
+        background: var(--white);
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: all 0.3s;
+      }
+
+      .screenshot-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .screenshot-card img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .screenshot-card .caption {
+        padding: 1.5rem;
+      }
+
+      .screenshot-card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+      }
+
+      .screenshot-card p {
+        color: var(--text-light);
+        font-size: 0.95rem;
+      }
+
+      /* Tech Stack Section */
+      .tech-stack {
+        padding: 5rem 2rem;
+        background: var(--white);
+      }
+
+      .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 3rem;
+      }
+
+      .tech-item {
+        background: var(--bg-light);
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        transition: all 0.3s;
+      }
+
+      .tech-item:hover {
+        background: var(--primary-color);
+        color: var(--white);
+        transform: translateY(-3px);
+      }
+
+      .tech-item strong {
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Quick Start Section */
+      .quick-start {
+        padding: 5rem 2rem;
+        background: linear-gradient(
+          135deg,
+          var(--bg-light) 0%,
+          var(--white) 100%
+        );
+      }
+
+      .code-block {
+        background: #2c3e50;
+        color: #ecf0f1;
+        padding: 1.5rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 1rem 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+      }
+
+      .code-block pre {
+        margin: 0;
+        padding: 0;
+        background: transparent;
+        overflow-x: auto;
+      }
+
+      .code-block pre code {
+        display: block;
+        white-space: pre;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .code-block code {
+        display: block;
+        white-space: pre;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+      }
+
+      /* Footer */
+      footer {
+        background: var(--text-dark);
+        color: var(--white);
+        padding: 3rem 2rem;
+        text-align: center;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-links a {
+        color: var(--white);
+        text-decoration: none;
+        transition: opacity 0.3s;
+      }
+
+      .footer-links a:hover {
+        opacity: 0.8;
+      }
+
+      .footer-text {
+        opacity: 0.8;
+        margin-top: 2rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+
+        .hero p {
+          font-size: 1.1rem;
+        }
+
+        .nav-links {
+          display: none;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .screenshots-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Smooth Scroll */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <nav>
+        <div class="logo">
+          <span>💺</span>
+          <span>席位绘</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="#features">功能特性</a></li>
+          <li><a href="#screenshots">系统截图</a></li>
+          <li><a href="#tech">技术栈</a></li>
+          <li><a href="#quickstart">快速开始</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>席位绘 - Wedding Seating</h1>
+        <p>一个现代化的婚礼座位布置管理系统，支持多人实时协作</p>
+        <p style="font-size: 1.1rem; margin-top: -1rem">
+          让婚礼座位安排变得简单、高效、有趣！
+        </p>
+
+        <div class="badges">
+          <span class="badge">React 18</span>
+          <span class="badge">TypeScript</span>
+          <span class="badge">Node.js</span>
+          <span class="badge">PostgreSQL</span>
+        </div>
+
+        <div class="cta-buttons">
+          <a
+            href="https://github.com/znonymous29/wedding-seating"
+            class="btn btn-primary"
+            target="_blank"
+          >
+            🚀 查看 GitHub
+          </a>
+          <a href="#quickstart" class="btn btn-secondary"> 📖 快速开始 </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title">✨ 功能特性</h2>
+        <p class="section-subtitle">强大的功能，让婚礼座位安排变得轻松简单</p>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>宾客管理</h3>
+            <ul>
+              <li>Excel 批量导入宾客名单</li>
+              <li>完善的宾客信息管理</li>
+              <li>自定义标签分类</li>
+              <li>智能搜索和筛选</li>
+              <li>批量操作支持</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">💺</div>
+            <h3>座位安排</h3>
+            <ul>
+              <li>拖拽式座位安排</li>
+              <li>智能推荐最佳座位</li>
+              <li>一键自动排座</li>
+              <li>排座约束（必须同桌/不能同桌）</li>
+              <li>实时预览和快速调整</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🏢</div>
+            <h3>场地布局</h3>
+            <ul>
+              <li>可视化场地编辑器</li>
+              <li>自由拖拽桌位布局</li>
+              <li>智能网格对齐</li>
+              <li>区域管理和颜色设置</li>
+              <li>导出高清平面图</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>多人协作</h3>
+            <ul>
+              <li>邀请链接快速加入</li>
+              <li>角色权限管理</li>
+              <li>实时数据同步</li>
+              <li>在线状态显示</li>
+              <li>多人同时操作</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>数据统计</h3>
+            <ul>
+              <li>总览统计关键指标</li>
+              <li>标签分布可视化</li>
+              <li>区域人数统计</li>
+              <li>座位安排进度跟踪</li>
+              <li>详细报表导出</li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>账户系统</h3>
+            <ul>
+              <li>安全的用户认证</li>
+              <li>数据完全隔离</li>
+              <li>自动登录支持</li>
+              <li>多项目管理</li>
+              <li>隐私安全保障</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screenshots Section -->
+    <section class="screenshots" id="screenshots">
+      <div class="container">
+        <h2 class="section-title">📸 系统截图</h2>
+        <p class="section-subtitle">直观的界面设计，让操作更加便捷</p>
+
+        <div class="screenshots-grid">
+          <div class="screenshot-card">
+            <img src="screenshots/dashboard.png" alt="项目面板" />
+            <div class="caption">
+              <h3>项目面板</h3>
+              <p>管理多个婚礼项目，一目了然查看所有筹备情况</p>
+            </div>
+          </div>
+
+          <div class="screenshot-card">
+            <img src="screenshots/guest-management.png" alt="宾客管理" />
+            <div class="caption">
+              <h3>宾客管理</h3>
+              <p>Excel 批量导入，支持标签分类和智能搜索</p>
+            </div>
+          </div>
+
+          <div class="screenshot-card">
+            <img src="screenshots/seating-arrangement.png" alt="座位安排" />
+            <div class="caption">
+              <h3>座位安排</h3>
+              <p>拖拽式座位安排，智能推荐，让排座变得简单快捷</p>
+            </div>
+          </div>
+
+          <div class="screenshot-card">
+            <img src="screenshots/floor-plan.png" alt="场地布局" />
+            <div class="caption">
+              <h3>场地布局</h3>
+              <p>可视化场地编辑器，自由拖拽桌位布局</p>
+            </div>
+          </div>
+
+          <div class="screenshot-card">
+            <img src="screenshots/statistics.png" alt="数据统计" />
+            <div class="caption">
+              <h3>数据统计</h3>
+              <p>实时统计宾客分布、座位安排进度</p>
+            </div>
+          </div>
+
+          <div class="screenshot-card">
+            <img src="screenshots/project-setting.png" alt="项目设置" />
+            <div class="caption">
+              <h3>项目设置</h3>
+              <p>邀请团队成员，角色权限管理，多人协作</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack" id="tech">
+      <div class="container">
+        <h2 class="section-title">🛠️ 技术栈</h2>
+        <p class="section-subtitle">采用现代化的技术栈，确保系统稳定高效</p>
+
+        <div class="tech-grid">
+          <div class="tech-item">
+            <strong>React 18</strong>
+            <span>UI 框架</span>
+          </div>
+          <div class="tech-item">
+            <strong>TypeScript</strong>
+            <span>类型安全</span>
+          </div>
+          <div class="tech-item">
+            <strong>Vite</strong>
+            <span>构建工具</span>
+          </div>
+          <div class="tech-item">
+            <strong>Ant Design</strong>
+            <span>UI 组件库</span>
+          </div>
+          <div class="tech-item">
+            <strong>Express</strong>
+            <span>Web 框架</span>
+          </div>
+          <div class="tech-item">
+            <strong>Prisma</strong>
+            <span>ORM</span>
+          </div>
+          <div class="tech-item">
+            <strong>PostgreSQL</strong>
+            <span>数据库</span>
+          </div>
+          <div class="tech-item">
+            <strong>Socket.IO</strong>
+            <span>实时通信</span>
+          </div>
+          <div class="tech-item">
+            <strong>Docker</strong>
+            <span>容器化</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Start Section -->
+    <section class="quick-start" id="quickstart">
+      <div class="container">
+        <h2 class="section-title">🚀 快速开始</h2>
+        <p class="section-subtitle">使用 Docker 一键部署，几分钟即可开始使用</p>
+
+        <div style="max-width: 800px; margin: 0 auto">
+          <h3 style="margin: 2rem 0 1rem; color: var(--primary-color)">
+            方式一：Docker 部署（推荐）
+          </h3>
+
+          <div class="code-block" id="code-block-1"></div>
+
+          <h3 style="margin: 2rem 0 1rem; color: var(--primary-color)">
+            方式二：本地开发
+          </h3>
+
+          <div class="code-block" id="code-block-2"></div>
+
+          <div style="text-align: center; margin-top: 2rem">
+            <a
+              href="https://github.com/znonymous29/wedding-seating/blob/main/README.md"
+              class="btn btn-primary"
+              target="_blank"
+              style="text-decoration: none"
+            >
+              📖 查看完整文档
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/znonymous29/wedding-seating" target="_blank"
+          >GitHub</a
+        >
+        <a
+          href="https://github.com/znonymous29/wedding-seating/issues"
+          target="_blank"
+          >问题反馈</a
+        >
+        <a
+          href="https://github.com/znonymous29/wedding-seating/blob/main/README.md"
+          target="_blank"
+          >文档</a
+        >
+      </div>
+      <div class="footer-text">
+        <p>席位绘 - Wedding Seating</p>
+        <p>版本 1.4.0 | MIT License</p>
+        <p style="margin-top: 1rem">
+          用 ❤️ 制作 | 让婚礼座位安排变得简单而美好
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Markdown code blocks
+      const codeBlock1 = `\`\`\`bash
+# 1. 克隆项目
+git clone https://github.com/znonymous29/wedding-seating.git
+cd wedding-seating
+
+# 2. 配置环境变量
+cp docker.env.example .env
+# 编辑 .env 文件，修改数据库密码和 JWT 密钥
+
+# 3. 启动服务
+docker-compose up -d
+
+# 4. 访问应用
+# 前端: http://localhost:18080
+# 后端 API: http://localhost:3001/api
+\`\`\``;
+
+      const codeBlock2 = `\`\`\`bash
+# 1. 安装依赖
+npm run install:all
+
+# 2. 配置数据库
+# 创建 PostgreSQL 数据库
+
+# 3. 配置环境变量
+cd server
+cp .env.example .env
+# 编辑 .env 文件
+
+# 4. 初始化数据库
+npx prisma generate
+npx prisma db push
+
+# 5. 启动开发服务器
+npm run dev
+\`\`\``;
+
+      // Configure marked
+      if (typeof marked !== "undefined") {
+        marked.setOptions({
+          highlight: function (code, lang) {
+            if (lang && typeof hljs !== "undefined") {
+              try {
+                return hljs.highlight(code, { language: lang }).value;
+              } catch (err) {
+                return hljs.highlightAuto(code).value;
+              }
+            }
+            return code;
+          },
+          breaks: true,
+        });
+
+        // Render markdown code blocks
+        document.addEventListener("DOMContentLoaded", function () {
+          const block1 = document.getElementById("code-block-1");
+          const block2 = document.getElementById("code-block-2");
+
+          if (block1) {
+            block1.innerHTML = marked.parse(codeBlock1);
+          }
+          if (block2) {
+            block2.innerHTML = marked.parse(codeBlock2);
+          }
+        });
+      } else {
+        // Fallback if marked.js is not loaded
+        document.addEventListener("DOMContentLoaded", function () {
+          const block1 = document.getElementById("code-block-1");
+          const block2 = document.getElementById("code-block-2");
+
+          const fallbackCode1 = `# 1. 克隆项目
+git clone https://github.com/znonymous29/wedding-seating.git
+cd wedding-seating
+
+# 2. 配置环境变量
+cp docker.env.example .env
+# 编辑 .env 文件，修改数据库密码和 JWT 密钥
+
+# 3. 启动服务
+docker-compose up -d
+
+# 4. 访问应用
+# 前端: http://localhost:18080
+# 后端 API: http://localhost:3001/api`;
+
+          const fallbackCode2 = `# 1. 安装依赖
+npm run install:all
+
+# 2. 配置数据库
+# 创建 PostgreSQL 数据库
+
+# 3. 配置环境变量
+cd server
+cp .env.example .env
+# 编辑 .env 文件
+
+# 4. 初始化数据库
+npx prisma generate
+npx prisma db push
+
+# 5. 启动开发服务器
+npm run dev`;
+
+          if (block1) {
+            block1.innerHTML = "<pre><code>" + fallbackCode1 + "</code></pre>";
+          }
+          if (block2) {
+            block2.innerHTML = "<pre><code>" + fallbackCode2 + "</code></pre>";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
